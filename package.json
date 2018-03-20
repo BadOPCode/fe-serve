@@ -1,0 +1,23 @@
+{
+  "name": "fe-serve",
+  "version": "1.0.0",
+  "description": "Another web server for front end developers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bin": {
+    "fe-serve": "./bin/fe-serve"
+  },
+  "dependencies": {
+    "@types/express": "^4.11.1",
+    "@types/node": "^9.4.7",
+    "cout": "0.0.6",
+    "express": "^4.16.3",
+    "serve-index": "^1.9.1",
+    "shelljs": "^0.8.1"
+  }
+}
