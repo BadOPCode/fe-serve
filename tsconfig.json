@@ -1,8 +1,17 @@
 {
     "compilerOptions": {
+        "target": "es6",
+        "outDir": "lib",
+        "module": "umd",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "experimentalDecorators": true,
         "types": [
             "Node",
             "express"
         ]
-    }
+    },
+    "include": [
+        "src/**/*"
+    ]
 }
