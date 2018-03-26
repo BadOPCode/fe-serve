@@ -3,49 +3,61 @@
  * Handles the web serving and proxy
  */
 
-//NPM Modules
-import * as fs from "fs";
-import * as express from "express";
-import * as serveIndex from "serve-index";
-import * as https from "https";
+// NPM Modules
 import * as cout from "cout";
 import * as decision from "dt-decisions";
+import * as express from "express";
 import * as autoreload from "express-dev-autoreload";
+import * as fs from "fs";
+import * as https from "https";
+import * as serveIndex from "serve-index";
 
-//Internal Modules
-import { IConfigData, IMapData } from "./Config";
+// Internal Modules
+import { IConfigData, IMapData, Symbols } from "./Config";
 
+/**
+ * WebServer: Main class for handling all the web functionality.
+ */
 export class WebServer {
-    app: any = express();
-    web: any;
-    private _config: IConfigData;
+    public app: any = express();
+    public web: any;
+    private pvtConfig: IConfigData;
     private isListening: boolean = false;
 
-    processConfig(config: IConfigData) {
-        this._config = config;
+    /**
+     * processConfig(): Processes specified config data and maps web features
+     * accordingly.
+     * @param config IConfigData
+     */
+    public processConfig(config: IConfigData) {
+        this.pvtConfig = config;
 
-        if (!this._config.pathMaps) {
-            return;
+        // if path maps is defined we need to process it
+        if (!!this.pvtConfig.pathMaps) {
+            this.unmap();
+            const keys = Object.keys(this.pvtConfig.pathMaps);
+            keys.map((key: string) => {
+                const pathMap: IMapData = this.pvtConfig.pathMaps[key];
+                pathMap.sharePath = key;
+                decision({
+                    mock: () => this.mapMock(pathMap),
+                    proxy: () => this.mapProxy(pathMap),
+                    static: () => this.mapStatic(pathMap),
+                })(pathMap.type);
+            });
         }
 
-        this.unmap();
-        const keys = Object.keys(this._config.pathMaps);
-        keys.map((key: string) => {
-            const pathMap: IMapData = this._config.pathMaps[key];
-            pathMap.sharePath = key;
-            decision({
-                'static': () => this.mapStatic(pathMap),
-                'proxy': () => this.mapProxy(pathMap),
-                'mock': () => this.mapMock(pathMap),
-            })(pathMap.type);
-        });
-
-        this.setPort(this._config.listenPort);
+        this.setPort(this.pvtConfig.listenPort);
     }
 
-    mapStatic(data: IMapData) {
-        if (!data.localPath)
-            return
+    /**
+     * mapStatic(): Adds a route to static content. Also has directory indexing.
+     * @param data IMapData {type, sharePath, localPath}
+     */
+    public mapStatic(data: IMapData) {
+        if (!data.localPath) {
+            throw new Error(Symbols.MISSING_LOCALPATH);
+        }
 
         cout(`Mapping static path ${data.sharePath} to ${data.localPath}`).info();
         this.app.use(data.sharePath, express.static(data.localPath));
@@ -53,12 +65,18 @@ export class WebServer {
         this.app.use(data.sharePath, autoreload({}));
     }
 
-    mapProxy(data: IMapData) {
+    /**
+     * mapProxy(): Maps a route that will proxy to a external webserver.
+     * @param data IMapData {type, sharePath, serverPath}
+     */
+    public mapProxy(data: IMapData) {
         cout(`Mapping proxy path from ${data.sharePath} to ${data.serverPath}`).info();
         this.app.all(data.sharePath, (req: any, res: any) => {
+            const method = req.method;
+
             https.get({
                 hostname: data.serverPath,
-                path: req.path
+                path: req.path,
             }, (serverRes) => {
                 res.writeHead(serverRes.statusCode, serverRes.headers);
                 res.pipe(serverRes);
@@ -67,7 +85,11 @@ export class WebServer {
         });
     }
 
-    mapMock(data: IMapData) {
+    /**
+     * mapMock(): Maps a file or script that can mock a endpoint.
+     * @param data IMapData {type, sharePath, mockFile}
+     */
+    public mapMock(data: IMapData) {
         cout(`Mapping path ${data.sharePath} to mock data ${data.mockFile}`).info();
         fs.access(data.mockFile, fs.constants.R_OK, (err) => {
             if (!err) {
@@ -79,19 +101,31 @@ export class WebServer {
         });
     }
 
-    unmap() {
-        if (this.app._router && this.app._router.stack.length)
+    /**
+     * unmap(): Unmaps all of the routes previously mapped.
+     */
+    public unmap() {
+        if (this.app._router && this.app._router.stack.length) {
             this.app._router.stack = [];
+        }
     }
 
-    closeServer() {
+    /**
+     * closeServer(): Stops the listening thread.
+     */
+    public closeServer() {
         this.web.close();
         this.isListening = false;
     }
 
-    setPort(listenPort: number) {
-        if (this.isListening) 
+    /**
+     * setPort(): Sets the listener to specified port.
+     * @param listenPort number
+     */
+    public setPort(listenPort: number) {
+        if (this.isListening) {
             this.closeServer();
+        }
 
         this.web = this.app.listen(listenPort, () => {
             cout(`Listening on port ${listenPort}`).info();

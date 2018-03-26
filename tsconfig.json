@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
         "target": "es6",
+        "lib": [
+            "es2015"
+        ],
         "outDir": "lib",
         "module": "umd",
         "moduleResolution": "node",
@@ -13,5 +16,8 @@
     },
     "include": [
         "src/**/*"
+    ],
+    "exclude": [
+        "src/**/*.spec.ts"
     ]
 }

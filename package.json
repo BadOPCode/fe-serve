@@ -4,7 +4,11 @@
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "tsc",
+        "build-tests": "tsc -p tsconfig.test.json",
+        "clean": "ts-node ./bin/clean",
+        "test": "npm run clean && npm run build-tests && npm run unit-tests",
+        "unit-tests": "nyc alsatian tests/**/*.spec.js"
     },
     "keywords": [],
     "author": "",
@@ -25,7 +29,21 @@
         "shelljs": "^0.8.1"
     },
     "devDependencies": {
-        "alsatian": "^2.2.1"
+        "alsatian": "^2.2.1",
+        "nyc": "^11.6.0",
+        "tap-bark": "^1.0.0",
+        "ts-node": "^5.0.1",
+        "typescript": "^2.7.2"
+    },
+    "nyc": {
+        "exclude": [
+            "**/*.spec.js"
+        ],
+        "reporter": [
+            "lcov",
+            "html"
+        ],
+        "report-dir": "./coverage"
     },
     "fe-serve": {
         "listenPort": 9000,
