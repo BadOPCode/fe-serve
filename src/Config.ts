@@ -26,18 +26,29 @@ export interface IMapData {
     mockFile?: string;
 }
 
+export interface ITask {
+    masks: string[];
+    tasks: {
+        onAdd: string;
+        onChange: string;
+        onDelete: string;
+    };
+}
+
 export interface IConfigData {
-    defaultApiAddress: string;
-    listenPort: number;
-    pathMaps: {
+    defaultApiAddress?: string;
+    listenPort?: number;
+    pathMaps?: {
         [path: string]: IMapData;
     };
+    watchTasks?: ITask[];
 }
 
 export class Config implements IConfigData {
     public defaultApiAddress: string;
     public listenPort: number;
     public pathMaps: { [path: string]: IMapData};
+    public watchTasks: ITask[];
     private currentWatchedConfig: string;
     private listeners: Array<(config: IConfigData) => void> = [];
 
