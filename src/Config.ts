@@ -29,9 +29,10 @@ export interface IMapData {
 export interface ITask {
     masks: string[];
     tasks: {
-        onAdd: string;
-        onChange: string;
-        onDelete: string;
+        any?: string;
+        onAdd?: string;
+        onChange?: string;
+        onDelete?: string;
     };
 }
 
