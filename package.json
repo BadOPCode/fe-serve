@@ -1,6 +1,6 @@
 {
     "name": "fe-serve",
-    "version": "1.0.0",
+    "version": "0.3.8",
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
