@@ -29,7 +29,7 @@ export class ConfigTestFixture {
     public testReadPackage() {
         SpyOn(fs, "readFileSync").andCall(() => {
             return JSON.stringify({
-                "fe-serve": {
+                "fullstack-serve": {
                     listenPort: 9000,
                 },
             });
@@ -58,7 +58,7 @@ export class ConfigTestFixture {
         Expect(fs.access).toHaveBeenCalled();
     }
 
-    @Test("readPackage should return an error if fe-serve is missing")
+    @Test("readPackage should return an error if fullstack-serve is missing")
     public testReadPackageMissingConfig() {
         SpyOn(fs, "readFileSync").andCall(() => {
             return JSON.stringify({

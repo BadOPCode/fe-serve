@@ -13,7 +13,7 @@ import * as shell from "shelljs";
  * Module that holds token constants
  */
 export const Symbols = {
-    MISSING_CONFIG: "The package.json does not contain fe-serve information.",
+    MISSING_CONFIG: "The package.json does not contain fullstack-serve information.",
     MISSING_LOCALPATH: "The localPath in static mapping was not specified",
     READ_ERROR: "Cannot find specified package.json.",
 };
@@ -78,16 +78,16 @@ export class Config implements IConfigData {
 
             const packageInfo = JSON.parse(fs.readFileSync(packagePath, "utf8"));
 
-            if (!packageInfo["fe-serve"]) {
+            if (!packageInfo["fullstack-serve"]) {
                 cout(Symbols.MISSING_CONFIG).error();
                 throw new Error(Symbols.MISSING_CONFIG);
             }
 
             cout("Loading configuration").info();
 
-            this.defaultApiAddress = packageInfo["fe-serve"].defaultApiAddress || "localhost";
-            this.listenPort = packageInfo["fe-serve"].listenPort || 3000;
-            this.pathMaps = packageInfo["fe-serve"].pathMaps || {};
+            this.defaultApiAddress = packageInfo["fullstack-serve"].defaultApiAddress || "localhost";
+            this.listenPort = packageInfo["fullstack-serve"].listenPort || 3000;
+            this.pathMaps = packageInfo["fullstack-serve"].pathMaps || {};
             this.notifyListeners();
 
             if (this.currentWatchedConfig !== packagePath) {

@@ -1,5 +1,5 @@
 {
-    "name": "fe-serve",
+    "name": "fullstack-serve",
     "version": "0.3.8",
     "description": "Another web server for front end developers.",
     "main": "index.js",
@@ -14,7 +14,7 @@
     "author": "",
     "license": "MIT",
     "bin": {
-        "fe-serve": "./bin/fe-serve"
+        "fullstack-serve": "./bin/fullstack-serve"
     },
     "dependencies": {
         "@types/express": "^4.11.1",
@@ -47,7 +47,7 @@
         ],
         "report-dir": "./coverage"
     },
-    "fe-serve": {
+    "fullstack-serve": {
         "listenPort": 9000,
         "pathMaps": {
             "/": {
