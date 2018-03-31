@@ -17,10 +17,12 @@ import * as serveIndex from "serve-index";
 // Internal Modules
 import { IConfigData, IMapData, Symbols } from "./Config";
 
-import Reload from "./PluginExpressReload";
+import Injector from "./PluginExpressInjector";
+// import RewriteHtml from "./PluginExpressRewriteHtml";
 import SendScript from "./PluginExpressSendScript";
 
 const SCRIPT_PATH = "/__reload.js";
+const INJECT_TAG = `<script src=\"${SCRIPT_PATH}\"><\/script>`;
 
 /**
  * WebServer: Main class for handling all the web functionality.
@@ -47,6 +49,8 @@ export class WebServer {
         // if path maps is defined we need to process it
         if (!!this.pvtConfig.pathMaps) {
             this.unmap();
+
+            // this.app.use(RewriteHtml());
 
             this.app.use(SendScript({
                 scriptPath: path.join(__dirname, "client.reload.js"),
@@ -79,11 +83,13 @@ export class WebServer {
 
         cout(`Mapping static path ${data.sharePath} to ${data.localPath}`).info();
 
-        this.app.use(data.sharePath, express.static(data.localPath));
-        // this.app.use(data.sharePath, Reload({
-        //     scriptPath: SCRIPT_PATH,
-        //     webServer: this.web,
-        // }));
+        // this.app.use(RewriteHtml);
+        // this.app.use(data.sharePath, express.static(data.localPath));
+        this.app.use(data.sharePath, Injector({
+            injectedText: INJECT_TAG,
+            localPath: data.localPath,
+            serverRoute: data.sharePath,
+        }));
         this.app.use(data.sharePath, serveIndex(data.localPath));
     }
 

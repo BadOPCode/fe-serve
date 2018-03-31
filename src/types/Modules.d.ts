@@ -4,3 +4,5 @@ declare module 'dt-decisions';
 declare module 'express-modify-response';
 declare module 'socket.io';
 declare module 'glob-watcher';
+declare module 'express-interceptor';
+declare module 'cheerio';
