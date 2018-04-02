@@ -1,9 +1,13 @@
-import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture } from "alsatian";
+import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture, Teardown, TeardownFixture } from "alsatian";
 import * as fs from "fs";
 import * as https from "https";
 import { IConfigData, Symbols } from "./Config";
 import * as WebSpec from "./Web";
-
+import { FakeIO } from "./mocks/socket.io.mock";
+import * as SocketIO from "socket.io";
+import { plugins } from "rewiremock";
+const rewiremock = require("rewiremock").default;
+ 
 const mockGoodConfig: IConfigData = {
     defaultApiAddress: "api.test.com",
     listenPort: 8675309,
@@ -26,16 +30,33 @@ const mockGoodConfig: IConfigData = {
     },
 };
 
+
 @TestFixture("Web Class")
 export class WebTestFixture {
     public web: WebSpec.WebServer;
+    @SetupFixture
+    public setupFixture() {
+        // SpyOn(socketio, "Server").andReturn({
+
+        // });
+        rewiremock.addPlugin(plugins.nodejs);
+        rewiremock.enable();
+    }
+
+    @TeardownFixture
+    public teardownTest() {
+        rewiremock.disable();
+    }
 
     @Setup
-    public setupFixture() {
+    public setupTest() {
+        rewiremock('socket.io').with({});
+        // rewiremock.proxy('socket.io', new FakeIO());
+
         // reinitialize web server every test because a couple of test we stub it
         this.web = new WebSpec.WebServer();
     }
-
+    
     @Test("Check to see if the constructor is working.")
     public testInit() {
         Expect(this.web).toBeDefined();
@@ -63,6 +84,11 @@ export class WebTestFixture {
             Expect(args[0]).toBe(8675309);
         });
         this.web.processConfig(mockGoodConfig);
+    }
+
+    @Test("addWebSocket()")
+    public testAddWebSocket() {
+        this.web.addWebSocket();    
     }
 
     @Test("Test mapMock to see if it maps")
@@ -145,8 +171,14 @@ export class WebTestFixture {
 
     @Test("Test the static mapping")
     public testMapStatic() {
+        rewiremock('./pluginExpressStatic').with({
+            static: (options:any) => {
+                Expect(options.serverPath).toBe("proxy")                
+            }
+        })
+
         SpyOn(this.web.app, "use").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("/proxy");
+            // Expect(args[0]).toBe("/proxy");
         });
         this.web.mapStatic({
             localPath: "/local",
@@ -181,27 +213,34 @@ export class WebTestFixture {
 
     @Test("This tests the closeServer() method")
     public testCloseServer() {
-        this.web.web = {
+        this.web.server = {
             close: () => {
                 const x = 1;
             },
         };
-        const closeSpy = SpyOn(this.web.web, "close");
+        const closeSpy = SpyOn(this.web.server, "close");
         this.web.closeServer();
         Expect(closeSpy).toHaveBeenCalled();
     }
 
     @Test("Test setPort to see if it starts listener")
     public testSetPort() {
-        const closeServer = SpyOn(this.web, "closeServer");
-        closeServer.andStub();
         SpyOn(this.web.app, "listen").andCall((...args: any[]) => {
             Expect(args[0]).toBe(1234);
             args[1]();
+            this.web.isListening = true;
         });
+    }
+
+    @Test("if setPort closes if already listening")
+    public testSetPortClose() {
+        const closeServer = SpyOn(this.web, "closeServer");
+        //closeServer.andCallThrough();
+        this.web.isListening = false;
         this.web.setPort(1234);
         Expect(closeServer).not.toHaveBeenCalled();
 
+        this.web.isListening = true;
         this.web.setPort(1234);
         Expect(closeServer).toHaveBeenCalled();
     }

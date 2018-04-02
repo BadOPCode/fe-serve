@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('../lib/main.js');
+path = require("path");
+let bootstrapLocation = path.join(__dirname, "..", "lib", "main");
+require(bootstrapLocation);

@@ -1,4 +1,5 @@
 {
     "tslint.autoFixOnSave": true,
-    "eslint.enable": false
+    "eslint.enable": false,
+    "javascript.implicitProjectConfig.experimentalDecorators": true
 }

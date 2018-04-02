@@ -12,29 +12,61 @@ import * as http from "http";
 import * as https from "https";
 import * as path from "path";
 import * as serveIndex from "serve-index";
-// import * as autoreload from "express-dev-autoreload";
+import * as SocketIO from "socket.io";
+import * as watch from "glob-watcher";
 
 // Internal Modules
 import { IConfigData, IMapData, Symbols } from "./Config";
 
-import Injector from "./PluginExpressInjector";
-// import RewriteHtml from "./PluginExpressRewriteHtml";
+import Static from "./PluginExpressStatic";
 import SendScript from "./PluginExpressSendScript";
 
-const SCRIPT_PATH = "/__reload.js";
-const INJECT_TAG = `<script src=\"${SCRIPT_PATH}\"><\/script>`;
+const SCRIPT_ROUTE = "/__fullstack.js";
+const SOCKETIO_ROUTE = "/socket.io/socket.io.js";
+const SOCKETIO_PATH = path.join(require.resolve("socket.io-client"), "..", "..", "dist", "socket.io.js");
+const SCRIPT_TAG = `<script src=\"${SOCKETIO_ROUTE}\"></script><script src=\"${SCRIPT_ROUTE}\"><\/script>`;
 
 /**
  * WebServer: Main class for handling all the web functionality.
  */
 export class WebServer {
-    public app: any = express();
-    public web: any = new http.Server(this.app);
+    public app: any;
+    public server: any;
+    public io: SocketIO.Server;
     public queue: any[];
     private pvtConfig: IConfigData;
-    private isListening: boolean = false;
+    public isListening: boolean = false;
 
     constructor() {
+        this.app = express();
+        this.server = new http.Server(this.app);
+        this.addWebSocket();
+    }
+
+    public addWebSocket() {
+        this.io = SocketIO(this.server);
+        this.io.on('connect', (socket: any) => {
+            this.queue.push(socket);
+
+            // console.log('Connected client on port');
+            // socket.on('message', (m: Message) => {
+            //     console.log('[server](message): %s', JSON.stringify(m));
+            //     this.io.emit('message', m);
+            // }); 
+            socket.emit('events', { hello: 'world' });
+
+            socket.on('disconnect', () => {
+                // console.log('Client disconnected');
+            });
+        });
+    }
+
+    public writeToQueue(cmd: string, value: any) {
+        console.log("command", cmd, value);
+        this.io.emit(cmd, value);
+        // this.queue.forEach((socket) => {
+        //     socket.emit(cmd, value);
+        // });
     }
 
     /**
@@ -50,13 +82,11 @@ export class WebServer {
         if (!!this.pvtConfig.pathMaps) {
             this.unmap();
 
-            // this.app.use(RewriteHtml());
-
             this.app.use(SendScript({
-                scriptPath: path.join(__dirname, "client.reload.js"),
-                sharePath: SCRIPT_PATH,
+                scriptPath: path.join(__dirname, "client", "FullstackClient.js"),
+                sharePath: SCRIPT_ROUTE,
             }));
-
+            
             const keys = Object.keys(this.pvtConfig.pathMaps);
             keys.map((key: string) => {
                 const pathMap: IMapData = this.pvtConfig.pathMaps[key];
@@ -83,13 +113,19 @@ export class WebServer {
 
         cout(`Mapping static path ${data.sharePath} to ${data.localPath}`).info();
 
-        // this.app.use(RewriteHtml);
-        // this.app.use(data.sharePath, express.static(data.localPath));
-        this.app.use(data.sharePath, Injector({
-            injectedText: INJECT_TAG,
+        this.app.use(Static({
+            injectedText: SCRIPT_TAG,
             localPath: data.localPath,
             serverRoute: data.sharePath,
         }));
+
+        const pathStr = data.localPath + "/**/*";
+        const pathWatch = watch([pathStr]);
+
+        pathWatch.on('add', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
+        pathWatch.on('change', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
+        pathWatch.on('unlink', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
+
         this.app.use(data.sharePath, serveIndex(data.localPath));
     }
 
@@ -142,7 +178,7 @@ export class WebServer {
      * closeServer(): Stops the listening thread.
      */
     public closeServer() {
-        this.web.close();
+        this.server.close();
         this.isListening = false;
     }
 
@@ -155,9 +191,10 @@ export class WebServer {
             this.closeServer();
         }
 
-        this.web = this.app.listen(listenPort, () => {
+        this.server.listen(listenPort, () => {
             cout(`Listening on port ${listenPort}`).info();
             this.isListening = true;
         });
+
     }
 }

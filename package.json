@@ -4,11 +4,13 @@
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
-        "build": "tsc",
-        "build-tests": "tsc -p tsconfig.test.json",
+        "build-dev": "ts-node ./bin/build-dev",
+        "deploy": "ts-node ./bin/deploy",
+        "build-server": "ts-node ./bin/build-server",
+        "build-client": "ts-node ./bin/build-client",
+        "build-tests": "ts-node ./bin/build-test",
         "clean": "ts-node ./bin/clean",
-        "test": "npm run clean && npm run build-tests && npm run unit-tests",
-        "unit-tests": "nyc alsatian tests/**/*.spec.js"
+        "test": "ts-node ./bin/run-tests"
     },
     "keywords": [],
     "author": "",
@@ -21,23 +23,25 @@
         "@types/node": "^9.4.7",
         "@types/serve-index": "^1.7.29",
         "@types/shelljs": "^0.7.8",
-        "cheerio": "^1.0.0-rc.2",
+        "@types/socket.io": "^1.4.33",
         "cout": "0.0.6",
         "dt-decisions": "0.0.4",
         "express": "^4.16.3",
-        "express-interceptor": "^1.2.0",
-        "express-modify-response": "^1.0.2",
         "glob-watcher": "^5.0.1",
         "serve-index": "^1.9.1",
         "shelljs": "^0.8.1",
-        "socket.io": "^2.0.4"
+        "socket.io": "^2.1.0"
     },
     "devDependencies": {
         "alsatian": "^2.2.1",
         "nyc": "^11.6.0",
+        "rewiremock": "^3.7.0",
         "tap-bark": "^1.0.0",
+        "ts-loader": "^4.1.0",
         "ts-node": "^5.0.1",
-        "typescript": "^2.7.2"
+        "typescript": "^2.7.2",
+        "webpack": "^4.4.1",
+        "webpack-cli": "^2.0.13"
     },
     "nyc": {
         "exclude": [

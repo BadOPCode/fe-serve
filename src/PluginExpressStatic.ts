@@ -4,7 +4,6 @@
  * Based off of express-dev-reload by Moritz(mo22)
  */
 // import * as expressModifyResponse from "express-modify-response";
-import * as cheerio from "cheerio";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -14,10 +13,10 @@ export interface IPluginOptions {
     injectedText: string;
 }
 
-export default function Injector(options: IPluginOptions) {
+export default function Static(options: IPluginOptions) {
     // console.log("Plugin loaded", options.webServer);
 
-    const pluginExpressInjector = (req: any, res: any, next: () => void) => {
+    const pluginExpressStatic = (req: any, res: any, next: () => void) => {
         if (!req.path.match(/\/$/)) {
             const match = RegExp(options.serverRoute + "(.*)$");
             const pathLocation = req.path.match(match);
@@ -43,6 +42,7 @@ export default function Injector(options: IPluginOptions) {
 
                 fileStream.on("end", () => {
                     res.end();
+                    next();
                 });
             });
         } else {
@@ -50,5 +50,5 @@ export default function Injector(options: IPluginOptions) {
         }
     };
 
-    return pluginExpressInjector;
+    return pluginExpressStatic;
 }
