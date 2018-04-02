@@ -8,7 +8,7 @@
         "deploy": "ts-node ./bin/deploy",
         "build-server": "ts-node ./bin/build-server",
         "build-client": "ts-node ./bin/build-client",
-        "build-tests": "ts-node ./bin/build-test",
+        "build-tests": "ts-node ./bin/build-tests",
         "clean": "ts-node ./bin/clean",
         "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },

@@ -6,11 +6,13 @@ import { FakeIO } from "./mocks/socket.io.mock";
 import rewiremock, { plugins } from "rewiremock";
 import * as SocketIO from "socket.io";
 
+var sockPuppet:FakeIO = new FakeIO(); 
+
 rewiremock.addPlugin(plugins.nodejs);
 rewiremock.enable();
 rewiremock('socket.io')
     .with(()=>{
-        return new FakeIO();
+        return sockPuppet;
     });
 import * as WebSpec from "./Web";
 
@@ -37,8 +39,6 @@ const mockGoodConfig: IConfigData = {
         },
     },
 };
-
-
 
 @TestFixture("Web Class")
 export class WebTestFixture {
@@ -94,7 +94,17 @@ export class WebTestFixture {
 
     @Test("addWebSocket()")
     public testAddWebSocket() {
-        this.web.addWebSocket();    
+        this.web.queue = [];
+        this.web.addWebSocket();
+        sockPuppet.$runCallback();
+        Expect(this.web.queue.length).toBe(1);
+    }
+
+    @Test("writeToQueue()")
+    public testWriteToQueue() {
+        const emitSpy = SpyOn(this.web.io, "emit");
+        this.web.writeToQueue("test", {"test":42});
+        Expect(emitSpy).toHaveBeenCalled();
     }
 
     @Test("Test mapMock to see if it maps")

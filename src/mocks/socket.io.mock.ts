@@ -11,17 +11,34 @@ export class FakeSocket {
     on(eventName: string, callback: ()=>void ): void {
 
     }
+
+    emit(eventName: string, data: any) {
+        
+    }
 }
 // { default?: SocketIOStatic; listen?: SocketIOStatic; }
 export class FakeIO {
+    public ioCallback: (socket: FakeSocket) => void;
+    public fakeSocket: FakeSocket
+
     Server() {
         return {
             default: "",
             listen: ""
         }
     }
-    on(eventName: string, callback: (socket: FakeSocket) => void ) {
 
+    $runCallback() {
+        this.fakeSocket = new FakeSocket();
+        this.ioCallback(this.fakeSocket);
+    }
+
+    emit(cmd:string, data:any) {
+
+    }
+
+    on(eventName: string, callback: (socket: FakeSocket) => void ) {
+        this.ioCallback = callback;
     }
 }
 

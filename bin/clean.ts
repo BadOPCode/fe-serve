@@ -19,4 +19,4 @@ export function Clean() {
     CleanTests();
 }
 
-Clean();
+// Clean();
