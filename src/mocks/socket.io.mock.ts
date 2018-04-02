@@ -12,8 +12,14 @@ export class FakeSocket {
 
     }
 }
-
+// { default?: SocketIOStatic; listen?: SocketIOStatic; }
 export class FakeIO {
+    Server() {
+        return {
+            default: "",
+            listen: ""
+        }
+    }
     on(eventName: string, callback: (socket: FakeSocket) => void ) {
 
     }

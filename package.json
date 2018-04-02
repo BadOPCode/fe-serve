@@ -10,7 +10,7 @@
         "build-client": "ts-node ./bin/build-client",
         "build-tests": "ts-node ./bin/build-test",
         "clean": "ts-node ./bin/clean",
-        "test": "ts-node ./bin/run-tests"
+        "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },
     "keywords": [],
     "author": "",

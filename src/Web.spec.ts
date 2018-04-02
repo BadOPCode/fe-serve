@@ -2,11 +2,19 @@ import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture, Teardown, Teardo
 import * as fs from "fs";
 import * as https from "https";
 import { IConfigData, Symbols } from "./Config";
-import * as WebSpec from "./Web";
 import { FakeIO } from "./mocks/socket.io.mock";
+import rewiremock, { plugins } from "rewiremock";
 import * as SocketIO from "socket.io";
-import { plugins } from "rewiremock";
-const rewiremock = require("rewiremock").default;
+
+rewiremock.addPlugin(plugins.nodejs);
+rewiremock.enable();
+rewiremock('socket.io')
+    .with(()=>{
+        return new FakeIO();
+    });
+import * as WebSpec from "./Web";
+
+// const rewiremock = require("rewiremock").default;
  
 const mockGoodConfig: IConfigData = {
     defaultApiAddress: "api.test.com",
@@ -31,6 +39,7 @@ const mockGoodConfig: IConfigData = {
 };
 
 
+
 @TestFixture("Web Class")
 export class WebTestFixture {
     public web: WebSpec.WebServer;
@@ -39,10 +48,8 @@ export class WebTestFixture {
         // SpyOn(socketio, "Server").andReturn({
 
         // });
-        rewiremock.addPlugin(plugins.nodejs);
-        rewiremock.enable();
     }
-
+ 
     @TeardownFixture
     public teardownTest() {
         rewiremock.disable();
@@ -50,7 +57,6 @@ export class WebTestFixture {
 
     @Setup
     public setupTest() {
-        rewiremock('socket.io').with({});
         // rewiremock.proxy('socket.io', new FakeIO());
 
         // reinitialize web server every test because a couple of test we stub it
