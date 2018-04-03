@@ -2,7 +2,13 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "sourceMap": true,
-        "outDir": "tests"
+        "outDir": "tests",
+        "lib": [
+            "es5",
+            "dom"
+        ],
+        "target": "es5",
+        "module": "umd"
     },
     "include": [
         "src/**/*.ts"

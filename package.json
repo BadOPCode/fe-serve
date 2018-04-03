@@ -1,6 +1,6 @@
 {
     "name": "fullstack-serve",
-    "version": "0.3.8",
+    "version": "0.4.17",
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
@@ -8,9 +8,9 @@
         "deploy": "ts-node ./bin/deploy",
         "build-server": "ts-node ./bin/build-server",
         "build-client": "ts-node ./bin/build-client",
-        "build-tests": "ts-node ./bin/build-test",
+        "build-tests": "ts-node ./bin/build-tests",
         "clean": "ts-node ./bin/clean",
-        "test": "ts-node ./bin/run-tests"
+        "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },
     "keywords": [],
     "author": "",
@@ -62,8 +62,20 @@
             },
             "/pkg": {
                 "type": "mock",
-                "mockFile": "package.json"
+                "mockFile": "examples/TestEndpoint.js"
+            },
+            "/proxy": {
+                "type": "proxy",
+                "remote": {
+                    "protocol": "http",
+                    "hostname": "md5.jsontest.com",
+                    "path": "/",
+                    "port": 80
+                }
             }
-        }
+        },
+        "watchTasks": [{
+            "any": "ls"
+        }]
     }
 }

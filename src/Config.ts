@@ -24,6 +24,12 @@ export interface IMapData {
     localPath?: string;
     serverPath?: string;
     mockFile?: string;
+    remote?: {
+        protocol?: string;
+        hostname?: string;
+        path?: string;
+        port?: number;
+    }
 }
 
 export interface ITask {

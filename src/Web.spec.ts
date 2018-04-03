@@ -1,12 +1,23 @@
 import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture, Teardown, TeardownFixture } from "alsatian";
 import * as fs from "fs";
+import * as path from "path";
 import * as https from "https";
 import { IConfigData, Symbols } from "./Config";
-import * as WebSpec from "./Web";
 import { FakeIO } from "./mocks/socket.io.mock";
+import rewiremock, { plugins } from "rewiremock";
 import * as SocketIO from "socket.io";
-import { plugins } from "rewiremock";
-const rewiremock = require("rewiremock").default;
+
+var sockPuppet:FakeIO = new FakeIO(); 
+
+rewiremock.addPlugin(plugins.nodejs);
+rewiremock.enable();
+rewiremock('socket.io')
+    .with(()=>{
+        return sockPuppet;
+    });
+import * as WebSpec from "./Web";
+
+// const rewiremock = require("rewiremock").default;
  
 const mockGoodConfig: IConfigData = {
     defaultApiAddress: "api.test.com",
@@ -30,7 +41,6 @@ const mockGoodConfig: IConfigData = {
     },
 };
 
-
 @TestFixture("Web Class")
 export class WebTestFixture {
     public web: WebSpec.WebServer;
@@ -39,10 +49,8 @@ export class WebTestFixture {
         // SpyOn(socketio, "Server").andReturn({
 
         // });
-        rewiremock.addPlugin(plugins.nodejs);
-        rewiremock.enable();
     }
-
+ 
     @TeardownFixture
     public teardownTest() {
         rewiremock.disable();
@@ -50,7 +58,6 @@ export class WebTestFixture {
 
     @Setup
     public setupTest() {
-        rewiremock('socket.io').with({});
         // rewiremock.proxy('socket.io', new FakeIO());
 
         // reinitialize web server every test because a couple of test we stub it
@@ -88,38 +95,31 @@ export class WebTestFixture {
 
     @Test("addWebSocket()")
     public testAddWebSocket() {
-        this.web.addWebSocket();    
+        this.web.queue = [];
+        this.web.addWebSocket();
+        sockPuppet.$runCallback();
+        Expect(this.web.queue.length).toBe(1);
+    }
+
+    @Test("writeToQueue()")
+    public testWriteToQueue() {
+        const emitSpy = SpyOn(this.web.io, "emit");
+        this.web.writeToQueue("test", {"test":42});
+        Expect(emitSpy).toHaveBeenCalled();
     }
 
     @Test("Test mapMock to see if it maps")
     public testMapMock() {
-        SpyOn(fs, "createReadStream").andCall((...args: any[]) => {
-            return {
-                pipe: (res: string) => {
-                    Expect(res).toBe("res");
-                },
-            };
-        });
-
-        // make mock for Express.all
-        SpyOn(this.web.app, "all").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("/mock");
-            Expect(args[1]).toBeDefined();
-            // called with fake parameters
-            args[1]("req", "res");
-        });
-
-        // make mock for node fs access
-        SpyOn(fs, "access").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("mock.json");
-            Expect(args[2]).toBeDefined();
-            args[2]();
-        });
-
+        SpyOn(this.web.mockEp, "addFile")
+            .andCall((...args: any[]) => {
+                Expect(args[0]).toBe("/mock");
+                Expect(args[1]).toBe("examples/TestEndpoint.js");
+            });
+        
         this.web.mapMock({
-            mockFile: "mock.json",
-            sharePath: "/mock",
             type: "mock",
+            sharePath: "/mock",
+            mockFile: "examples/TestEndpoint.js"
         });
     }
 
