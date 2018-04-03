@@ -1,5 +1,6 @@
 import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture, Teardown, TeardownFixture } from "alsatian";
 import * as fs from "fs";
+import * as path from "path";
 import * as https from "https";
 import { IConfigData, Symbols } from "./Config";
 import { FakeIO } from "./mocks/socket.io.mock";
@@ -109,33 +110,16 @@ export class WebTestFixture {
 
     @Test("Test mapMock to see if it maps")
     public testMapMock() {
-        SpyOn(fs, "createReadStream").andCall((...args: any[]) => {
-            return {
-                pipe: (res: string) => {
-                    Expect(res).toBe("res");
-                },
-            };
-        });
-
-        // make mock for Express.all
-        SpyOn(this.web.app, "all").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("/mock");
-            Expect(args[1]).toBeDefined();
-            // called with fake parameters
-            args[1]("req", "res");
-        });
-
-        // make mock for node fs access
-        SpyOn(fs, "access").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("mock.json");
-            Expect(args[2]).toBeDefined();
-            args[2]();
-        });
-
+        SpyOn(this.web.mockEp, "addFile")
+            .andCall((...args: any[]) => {
+                Expect(args[0]).toBe("/mock");
+                Expect(args[1]).toBe("examples/TestEndpoint.js");
+            });
+        
         this.web.mapMock({
-            mockFile: "mock.json",
-            sharePath: "/mock",
             type: "mock",
+            sharePath: "/mock",
+            mockFile: "examples/TestEndpoint.js"
         });
     }
 

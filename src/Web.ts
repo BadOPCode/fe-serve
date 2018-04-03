@@ -1,5 +1,5 @@
 /**
- * Web.ts
+ * Web.ts:
  * Handles the web serving and proxy
  */
 
@@ -14,6 +14,7 @@ import * as path from "path";
 import * as serveIndex from "serve-index";
 import * as SocketIO from "socket.io";
 import * as watch from "glob-watcher";
+import { IMockEndpoint, MockEndpointAPI } from "./MockApi";
 
 // Internal Modules
 import { IConfigData, IMapData, Symbols } from "./Config";
@@ -33,6 +34,7 @@ export class WebServer {
     public app: any;
     public server: any;
     public io: SocketIO.Server;
+    public mockEp: MockEndpointAPI;
     public queue: any[];
     private pvtConfig: IConfigData;
     public isListening: boolean = false;
@@ -41,6 +43,7 @@ export class WebServer {
         this.app = express();
         this.server = new http.Server(this.app);
         this.addWebSocket();
+        this.mockEp = new MockEndpointAPI(this.app);
     }
 
     public addWebSocket() {
@@ -155,14 +158,15 @@ export class WebServer {
      */
     public mapMock(data: IMapData) {
         cout(`Mapping path ${data.sharePath} to mock data ${data.mockFile}`).info();
-        fs.access(data.mockFile, fs.constants.R_OK, (err) => {
-            if (!err) {
-                this.app.all(data.sharePath, (req: any, res: any) => {
-                    const mockStream = fs.createReadStream(data.mockFile);
-                    mockStream.pipe(res);
-                });
-            }
-        });
+        this.mockEp.addFile(data.sharePath, data.mockFile);
+        // fs.access(data.mockFile, fs.constants.R_OK, (err) => {
+        //     if (!err) {
+        //         this.app.all(data.sharePath, (req: any, res: any) => {
+        //             const mockStream = fs.createReadStream(data.mockFile);
+        //             mockStream.pipe(res);
+        //         });
+        //     }
+        // });
     }
 
     /**
