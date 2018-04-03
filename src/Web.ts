@@ -9,15 +9,15 @@ import * as decision from "dt-decisions";
 import * as express from "express";
 import * as fs from "fs";
 import * as http from "http";
-import * as https from "https";
 import * as path from "path";
 import * as serveIndex from "serve-index";
 import * as SocketIO from "socket.io";
 import * as watch from "glob-watcher";
-import { IMockEndpoint, MockEndpointAPI } from "./MockApi";
 
 // Internal Modules
 import { IConfigData, IMapData, Symbols } from "./Config";
+import { IMockEndpoint, MockEndpoint } from "./MockEndpoint";
+import { ProxyEndpoint } from "./ProxyEndpoint";
 
 import Static from "./PluginExpressStatic";
 import SendScript from "./PluginExpressSendScript";
@@ -34,7 +34,8 @@ export class WebServer {
     public app: any;
     public server: any;
     public io: SocketIO.Server;
-    public mockEp: MockEndpointAPI;
+    public mockEp: MockEndpoint;
+    public proxyEp: ProxyEndpoint;
     public queue: any[];
     private pvtConfig: IConfigData;
     public isListening: boolean = false;
@@ -43,7 +44,8 @@ export class WebServer {
         this.app = express();
         this.server = new http.Server(this.app);
         this.addWebSocket();
-        this.mockEp = new MockEndpointAPI(this.app);
+        this.mockEp = new MockEndpoint(this.app);
+        this.proxyEp = new ProxyEndpoint(this.app);
     }
 
     public addWebSocket() {
@@ -65,11 +67,7 @@ export class WebServer {
     }
 
     public writeToQueue(cmd: string, value: any) {
-        console.log("command", cmd, value);
         this.io.emit(cmd, value);
-        // this.queue.forEach((socket) => {
-        //     socket.emit(cmd, value);
-        // });
     }
 
     /**
@@ -138,18 +136,19 @@ export class WebServer {
      */
     public mapProxy(data: IMapData) {
         cout(`Mapping proxy path from ${data.sharePath} to ${data.serverPath}`).info();
-        this.app.all(data.sharePath, (req: any, res: any) => {
-            const method = req.method;
+        this.proxyEp.addProxyRoute(data.sharePath, data.remote);
+        // this.app.all(data.sharePath, (req: any, res: any) => {
+        //     const method = req.method;
 
-            https.get({
-                hostname: data.serverPath,
-                path: req.path,
-            }, (serverRes) => {
-                res.writeHead(serverRes.statusCode, serverRes.headers);
-                res.pipe(serverRes);
-                serverRes.pipe(res);
-            });
-        });
+        //     https.get({
+        //         hostname: data.serverPath,
+        //         path: req.path,
+        //     }, (serverRes) => {
+        //         res.writeHead(serverRes.statusCode, serverRes.headers);
+        //         res.pipe(serverRes);
+        //         serverRes.pipe(res);
+        //     });
+        // });
     }
 
     /**
@@ -159,14 +158,6 @@ export class WebServer {
     public mapMock(data: IMapData) {
         cout(`Mapping path ${data.sharePath} to mock data ${data.mockFile}`).info();
         this.mockEp.addFile(data.sharePath, data.mockFile);
-        // fs.access(data.mockFile, fs.constants.R_OK, (err) => {
-        //     if (!err) {
-        //         this.app.all(data.sharePath, (req: any, res: any) => {
-        //             const mockStream = fs.createReadStream(data.mockFile);
-        //             mockStream.pipe(res);
-        //         });
-        //     }
-        // });
     }
 
     /**

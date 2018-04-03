@@ -14,7 +14,7 @@ export interface IMockEndpoint {
  * MockApi:
  * Class searches specified directories for scripts that add routes.
  */
-export class MockEndpointAPI {
+export class MockEndpoint {
     constructor(public server: any) {
     }
 

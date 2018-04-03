@@ -24,6 +24,12 @@ export interface IMapData {
     localPath?: string;
     serverPath?: string;
     mockFile?: string;
+    remote?: {
+        protocol?: string;
+        hostname?: string;
+        path?: string;
+        port?: number;
+    }
 }
 
 export interface ITask {
@@ -69,7 +75,6 @@ export class Config implements IConfigData {
      */
     public readPackage(specifiedPath: string = ".") {
         const packagePath = path.join(specifiedPath, "package.json");
-        console.log("packagePath",packagePath);
 
         fs.access(packagePath, fs.constants.R_OK, (err) => {
             if (err) {

@@ -17,6 +17,7 @@ export default function Static(options: IPluginOptions) {
     // console.log("Plugin loaded", options.webServer);
 
     const pluginExpressStatic = (req: any, res: any, next: () => void) => {
+        if (!req.path) return;
         if (!req.path.match(/\/$/)) {
             const match = RegExp(options.serverRoute + "(.*)$");
             const pathLocation = req.path.match(match);

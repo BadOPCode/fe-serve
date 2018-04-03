@@ -63,7 +63,19 @@
             "/pkg": {
                 "type": "mock",
                 "mockFile": "examples/TestEndpoint.js"
+            },
+            "/proxy": {
+                "type": "proxy",
+                "remote": {
+                    "protocol": "http",
+                    "hostname": "md5.jsontest.com",
+                    "path": "/",
+                    "port": 80
+                }
             }
-        }
+        },
+        "watchTasks": [{
+            "any": "ls"
+        }]
     }
 }
