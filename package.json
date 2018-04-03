@@ -1,6 +1,6 @@
 {
     "name": "fullstack-serve",
-    "version": "0.3.8",
+    "version": "0.4.17",
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
