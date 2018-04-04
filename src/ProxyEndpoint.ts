@@ -21,21 +21,21 @@ export class ProxyEndpoint {
     addProxyRoute(sharePath: string, serverOpts: any) {
         cout(`Mapping proxy path from ${sharePath} to ${serverOpts.hostname}`).info();
         this.server.all(sharePath, (req: any, res: any) => {
-            const method: string = req.method;
+            const method: string = req.method.toUpperCase();
 
-            console.log("req.url", req.url);
             const fixedSharePath = sharePath.replace(/\//g, "\/");
             const pattern = RegExp(`.*${fixedSharePath}(.*\?.*)$`);
             const paths = req.url.match(pattern);
             const serverPath = serverOpts.path + paths[1];
-            console.log("serverPath", serverPath);
 
             const options = {
                 hostname: serverOpts.hostname,
                 path: serverPath,
                 method: method,
-                port: serverOpts.ports
-            }
+                port: serverOpts.ports || (serverOpts.protocol==="http" ? 80 : 443)
+            };
+
+            console.log("options:", options);
 
             const serverRes = (serverRes: any) => {
                 res.writeHead(serverRes.statusCode, serverRes.headers);
@@ -44,17 +44,12 @@ export class ProxyEndpoint {
             }
 
             if (serverOpts.protocol == "http") {
-                http.get(options, serverRes);
-                // http[method](
-                //     options,
-                //     serverRes
-                // );
+                const req = http.request(options, serverRes);
+                req.end();
             }
             if (serverOpts.protocol == "https") {
-                // https[method](
-                //     options,
-                //     serverRes
-                // );
+                const req = https.request(options, serverRes);
+                req.end();
             }
         });
     }
