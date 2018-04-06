@@ -35,8 +35,6 @@ export class ProxyEndpoint {
                 port: serverOpts.ports || (serverOpts.protocol==="http" ? 80 : 443)
             };
 
-            console.log("options:", options);
-
             const serverRes = (serverRes: any) => {
                 res.writeHead(serverRes.statusCode, serverRes.headers);
                 res.pipe(serverRes);

@@ -6,3 +6,5 @@ declare var document:Document;
 var socket = io.connect();
 
 reload.run(socket);
+
+console.log('testing');

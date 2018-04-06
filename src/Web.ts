@@ -81,8 +81,6 @@ export class WebServer {
 
         // if path maps is defined we need to process it
         if (!!this.pvtConfig.pathMaps) {
-            this.unmap();
-
             this.app.use(SendScript({
                 scriptPath: path.join(__dirname, "client", "FullstackClient.js"),
                 sharePath: SCRIPT_ROUTE,
@@ -112,7 +110,7 @@ export class WebServer {
             throw new Error(Symbols.MISSING_LOCALPATH);
         }
 
-        cout(`Mapping static path ${data.sharePath} to ${data.localPath}`).info();
+        cout(`Mapping static path from ${data.sharePath} to ${data.localPath}`).verbose();
 
         this.app.use(Static({
             injectedText: SCRIPT_TAG,
@@ -135,20 +133,8 @@ export class WebServer {
      * @param data IMapData {type, sharePath, serverPath}
      */
     public mapProxy(data: IMapData) {
-        cout(`Mapping proxy path from ${data.sharePath} to ${data.serverPath}`).info();
+        cout(`Mapping proxy path from ${data.sharePath} to ${data.serverPath}`).verbose();
         this.proxyEp.addProxyRoute(data.sharePath, data.remote);
-        // this.app.all(data.sharePath, (req: any, res: any) => {
-        //     const method = req.method;
-
-        //     https.get({
-        //         hostname: data.serverPath,
-        //         path: req.path,
-        //     }, (serverRes) => {
-        //         res.writeHead(serverRes.statusCode, serverRes.headers);
-        //         res.pipe(serverRes);
-        //         serverRes.pipe(res);
-        //     });
-        // });
     }
 
     /**
@@ -156,7 +142,7 @@ export class WebServer {
      * @param data IMapData {type, sharePath, mockFile}
      */
     public mapMock(data: IMapData) {
-        cout(`Mapping path ${data.sharePath} to mock data ${data.mockFile}`).info();
+        cout(`Mapping mock path from ${data.sharePath} to ${data.mockFile}`).verbose();
         this.mockEp.addFile(data.sharePath, data.mockFile);
     }
 

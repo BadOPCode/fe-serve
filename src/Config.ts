@@ -94,13 +94,15 @@ export class Config implements IConfigData {
             this.defaultApiAddress = packageInfo["fullstack-serve"].defaultApiAddress || "localhost";
             this.listenPort = packageInfo["fullstack-serve"].listenPort || 3000;
             this.pathMaps = packageInfo["fullstack-serve"].pathMaps || {};
+            this.watchTasks = packageInfo["fullstack-serve"].watchTasks || [];
             this.notifyListeners();
 
             if (this.currentWatchedConfig !== packagePath) {
                 this.currentWatchedConfig = packagePath;
-                fs.unwatchFile(this.currentWatchedConfig);
+                // fs.unwatchFile(this.currentWatchedConfig);
                 fs.watchFile(packagePath, (curr, prev) => {
-                    this.readPackage(specifiedPath);
+                    // this.readPackage(specifiedPath);
+                    process.exit(42);
                 });
             }
         });

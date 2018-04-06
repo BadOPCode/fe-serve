@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@types/express": "^4.11.1",
-        "@types/node": "^9.4.7",
+        "@types/node": "^9.6.2",
         "@types/serve-index": "^1.7.29",
         "@types/shelljs": "^0.7.8",
         "@types/socket.io": "^1.4.33",
@@ -39,9 +39,9 @@
         "tap-bark": "^1.0.0",
         "ts-loader": "^4.1.0",
         "ts-node": "^5.0.1",
-        "typescript": "^2.7.2",
-        "webpack": "^4.4.1",
-        "webpack-cli": "^2.0.13"
+        "typescript": "^2.8.1",
+        "webpack": "^4.5.0",
+        "webpack-cli": "^2.0.14"
     },
     "nyc": {
         "exclude": [
@@ -74,8 +74,15 @@
                 }
             }
         },
-        "watchTasks": [{
-            "any": "ls"
-        }]
+        "watchTasks": [
+            {
+                "masks": [
+                    "src/client/**/*.ts"
+                ],
+                "tasks": {
+                    "any": "npm run build-client"
+                }
+            }
+        ]
     }
 }

@@ -1,6 +1,7 @@
 import { IConfigData } from "./Config";
 import * as fs from "fs";
 import * as path from "path";
+import * as cout from "cout";
 /**
  * MockApi.ts:
  * 
@@ -20,7 +21,6 @@ export class MockEndpoint {
 
     addFile(sharePath: string, fileName: string) {
         const filePath = path.join(__dirname, "..", fileName);
-        console.log("filePath", filePath);
         fs.access(filePath, fs.constants.R_OK, (err:any) => {
             if (err) return;
 

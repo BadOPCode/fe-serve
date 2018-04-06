@@ -1,5 +1,23 @@
 import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture } from "alsatian";
 import * as shell from "shelljs";
+import rewiremock from "rewiremock";
+rewiremock.enable();
+rewiremock('glob-watcher')
+    .with((mask:string)=>{
+        return {
+            on: (type:string, callback:(path:string, stat:any)=>void) => {
+                callback("./"+type, {
+                    isBlockDevice: ()=>true,
+                    isCharacterDevice: ()=>true,
+                    isDirectory: ()=>true,
+                    isFIFO: ()=>true,
+                    isFile: ()=>true,
+                    isSocket: ()=>true,
+                    isSymbolicLink: ()=>true,
+                });
+            }
+        }
+    });
 import * as WatchSpec from "./WatchTasks";
 
 @TestFixture("WatchTask Class")
@@ -41,11 +59,14 @@ export class WatchTaskTestFixture {
 
     @Test("Test processConfig to see if it can successfully parse the config object.")
     public testProcessConfig() {
+        SpyOn(shell, "exec").andStub();
+
         this.watch.processConfig({
             watchTasks: [
                 {
                     masks: ["*"],
                     tasks: {
+                        any: "any",
                         onAdd: "add",
                         onChange: "change",
                         onDelete: "delete",
