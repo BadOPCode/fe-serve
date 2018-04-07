@@ -1,6 +1,8 @@
 import * as decision from "dt-decisions";
 import * as watch from "glob-watcher";
 import * as shell from "shelljs";
+import * as cout from "cout";
+
 import { IConfigData } from "./Config";
 
 export class WatchTask {
@@ -28,6 +30,7 @@ export class WatchTask {
             .replace(/{ctime}/g, "" + stats.ctimeMs)
             .replace(/{btime}/g, "" + stats.birthtimeMs);
 
+        cout(`Task triggered running: ${cmd}`).warn();
         shell.exec(taskCmd);
     }
 
@@ -38,6 +41,8 @@ export class WatchTask {
         if (!!this.pvtConfig.watchTasks) {
             this.pvtConfig.watchTasks.forEach((task) => {
                 const newWatch = watch(task.masks);
+                cout(`Watching path ${task.masks}`).warn();
+
                 if (task.tasks.any) {
                     newWatch.on("add", (path: string, stat: any) =>
                         this.processCommand(task.tasks.any, path, stat));

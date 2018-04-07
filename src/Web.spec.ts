@@ -1,7 +1,4 @@
 import { Expect, Setup, SetupFixture, SpyOn, Test, TestFixture, Teardown, TeardownFixture } from "alsatian";
-import * as fs from "fs";
-import * as path from "path";
-import * as https from "https";
 import { IConfigData, Symbols } from "./Config";
 import { FakeIO } from "./mocks/socket.io.mock";
 import rewiremock, { plugins } from "rewiremock";
@@ -125,48 +122,16 @@ export class WebTestFixture {
 
     @Test("Test mapProxy to see if it correctly adds a route")
     public testMapProxy() {
-        // make mock for https.get
-        SpyOn(https, "get").andCall((...args: any[]) => {
-            Expect(args[0].hostname).toBe("api.proxy.com");
-            Expect(args[0].path).toBe("/path");
-
-            args[1]({
-                headers: "headers",
-                pipe: (localRes: any) => {
-                    Expect(localRes.isLocalRes).toBe(true);
-                },
-                statusCode: 200,
-            });
-        });
-
-        // make mock for Express.all
-        SpyOn(this.web.app, "all").andCall((...args: any[]) => {
-            Expect(args[0]).toBe("/proxy");
-            Expect(args[1]).toBeDefined();
-            const req = {
-                method: "GET",
-                path: "/path",
-            };
-            const res = {
-                isLocalRes: true,
-                pipe: (serverRes: any) => {
-                    Expect(serverRes.statusCode).toBe(200);
-                    Expect(serverRes.headers).toBe("headers");
-                },
-                writeHead: (statusCode: number, headers: string) => {
-                    Expect(statusCode).toBe(200);
-                    Expect(headers).toBe("headers");
-                },
-            };
-            // called with fake parameters
-            args[1](req, res);
-        });
+        const stub = SpyOn(this.web.proxyEp, "addProxyRoute");
+        stub.andStub();
 
         this.web.mapProxy({
             serverPath: "api.proxy.com",
             sharePath: "/proxy",
             type: "proxy",
         });
+
+        Expect(stub).toHaveBeenCalled()
     }
 
     @Test("Test the static mapping")

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
 path = require("path");
-let bootstrapLocation = path.join(__dirname, "..", "lib", "main");
+let bootstrapLocation = path.join(__dirname, "..", "lib", "fullstack");
 require(bootstrapLocation);
