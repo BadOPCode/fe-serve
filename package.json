@@ -3,6 +3,12 @@
     "version": "0.5.19",
     "description": "A swiss army knife utility to help fullstack developers do their jobs and share uniformed environments with other developers.",
     "main": "index.js",
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/BadOPCode/fullstack-serve.git"
+    },
+
     "scripts": {
         "build-dev": "ts-node ./bin/build-dev",
         "deploy": "ts-node ./bin/deploy",
