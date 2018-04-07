@@ -1,6 +1,6 @@
 {
     "name": "fullstack-serve",
-    "version": "0.4.18",
+    "version": "0.5.19",
     "description": "Another web server for front end developers.",
     "main": "index.js",
     "scripts": {
@@ -13,7 +13,7 @@
         "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },
     "keywords": [],
-    "author": "",
+    "author": "Shawn Rapp",
     "license": "MIT",
     "bin": {
         "fullstack-serve": "./bin/fullstack-serve"
@@ -74,15 +74,13 @@
                 }
             }
         },
-        "watchTasks": [
-            {
-                "masks": [
-                    "src/client/**/*.ts"
-                ],
-                "tasks": {
-                    "any": "npm run build-client"
-                }
+        "watchTasks": [{
+            "masks": [
+                "src/client/**/*.ts"
+            ],
+            "tasks": {
+                "any": "npm run build-client"
             }
-        ]
+        }]
     }
 }
