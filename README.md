@@ -1,3 +1,6 @@
+WARNING: Currently testing deploy system!!!
+When this project is ready to be released the version will be marked 1.x and I will remove this disclaimer.
+
 # fullstack-serve
 The swiss army web developers tool.
 
