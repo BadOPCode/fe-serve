@@ -1,8 +1,8 @@
 #!/bin/env ts-node
 import * as shell from "shelljs";
-import {Clean} from "./clean";
+import {CleanTests} from "./clean";
 import {BuildTests} from "./build";
 
-Clean();
+CleanTests();
 BuildTests();
 shell.exec("nyc alsatian tests/**/*.spec.js");

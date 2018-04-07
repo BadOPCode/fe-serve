@@ -20,7 +20,7 @@ export class MockEndpoint {
     }
 
     addFile(sharePath: string, fileName: string) {
-        const filePath = path.join(__dirname, "..", fileName);
+        const filePath = path.join(process.cwd(), fileName);
         fs.access(filePath, fs.constants.R_OK, (err:any) => {
             if (err) return;
 

@@ -1,6 +1,6 @@
 {
     "name": "fullstack-serve",
-    "version": "0.5.19",
+    "version": "1.0.0",
     "description": "A swiss army knife utility to help fullstack developers do their jobs and share uniformed environments with other developers.",
     "main": "index.js",
 
@@ -22,7 +22,7 @@
     "author": "Shawn Rapp",
     "license": "MIT",
     "bin": {
-        "fullstack-serve": "./bin/fullstack-serve"
+        "fullstack": "./bin/fullstack"
     },
     "dependencies": {
         "@types/express": "^4.11.1",

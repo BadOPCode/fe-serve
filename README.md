@@ -27,11 +27,9 @@ To install use NPM and type...
 After installing as a dev dependency you than need to add some configuration to your package.json.
 In the scripts section you can add...
 
-```
-scripts:{
-    "serve": "fullstack"
-    ...
-```
+    scripts:{
+        "serve": "fullstack"
+        ...
 
 To run you just need to run `npm run serve`
 
