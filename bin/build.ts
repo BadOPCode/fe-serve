@@ -14,6 +14,10 @@ export function BuildTests() {
     shell.exec("tsc -p tsconfig.test.json");
 }
 
+export function BuildDocs() {
+    shell.exec("webpack --config webpack.docs.config.js");
+}
+
 export function BuildDev() {
     Clean();
     BuildServer();

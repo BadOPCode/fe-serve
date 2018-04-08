@@ -3,18 +3,17 @@
     "version": "1.0.0",
     "description": "A swiss army knife utility to help fullstack developers do their jobs and share uniformed environments with other developers.",
     "main": "index.js",
-
     "repository": {
         "type": "git",
         "url": "https://github.com/BadOPCode/fullstack-serve.git"
     },
-
     "scripts": {
         "build-dev": "ts-node ./bin/build-dev",
         "deploy": "ts-node ./bin/deploy",
         "build-server": "ts-node ./bin/build-server",
         "build-client": "ts-node ./bin/build-client",
         "build-tests": "ts-node ./bin/build-tests",
+        "build-docs": "ts-node ./bin/build-docs",
         "clean": "ts-node ./bin/clean",
         "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },
@@ -27,6 +26,7 @@
     "dependencies": {
         "@types/express": "^4.11.1",
         "@types/node": "^9.6.2",
+        "@types/react-router-dom": "^4.2.6",
         "@types/serve-index": "^1.7.29",
         "@types/shelljs": "^0.7.8",
         "@types/socket.io": "^1.4.33",
@@ -34,16 +34,29 @@
         "dt-decisions": "0.0.4",
         "express": "^4.16.3",
         "glob-watcher": "^5.0.1",
+        "react-router-dom": "^4.2.2",
         "serve-index": "^1.9.1",
         "shelljs": "^0.8.1",
         "socket.io": "^2.1.0"
     },
     "devDependencies": {
+        "@types/material-ui": "^0.21.1",
+        "@types/mime": "^2.0.0",
+        "@types/react": "^16.0.4",
+        "@types/react-dom": "^16.0.4",
         "alsatian": "^2.2.1",
+        "css-loader": "^0.28.11",
+        "material-ui": "^0.20.0",
+        "mime": "^2.2.2",
+        "node-sass": "^4.8.3",
         "nyc": "^11.6.0",
+        "react": "^16.0.4",
+        "react-dom": "^16.0.4",
         "rewiremock": "^3.7.0",
+        "sass-loader": "^6.0.7",
+        "style-loader": "^0.20.3",
         "tap-bark": "^1.0.0",
-        "ts-loader": "^4.1.0",
+        "ts-loader": "^4.2.0",
         "ts-node": "^5.0.1",
         "typescript": "^2.8.1",
         "webpack": "^4.5.0",
@@ -64,6 +77,10 @@
         "pathMaps": {
             "/": {
                 "type": "static",
+                "localPath": "docs"
+            },
+            "/static": {
+                "type": "static",
                 "localPath": "examples"
             },
             "/pkg": {
@@ -80,13 +97,23 @@
                 }
             }
         },
-        "watchTasks": [{
-            "masks": [
-                "src/client/**/*.ts"
-            ],
-            "tasks": {
-                "any": "npm run build-client"
+        "watchTasks": [
+            {
+                "masks": [
+                    "src/client/**/*.ts"
+                ],
+                "tasks": {
+                    "any": "npm run build-client"
+                }
+            },
+            {
+                "masks": [
+                    "docs-src/**/*"
+                ],
+                "tasks": {
+                    "any": "npm run build-docs"
+                }
             }
-        }]
+        ]
     }
 }

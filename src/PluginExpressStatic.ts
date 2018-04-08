@@ -6,6 +6,8 @@
 // import * as expressModifyResponse from "express-modify-response";
 import * as fs from "fs";
 import * as path from "path";
+import * as mime from "mime";
+import * as cout from "cout";
 
 export interface IPluginOptions {
     localPath: string;
@@ -20,14 +22,24 @@ export default function Static(options: IPluginOptions) {
         if (!req.path) return;
         if (!req.path.match(/\/$/)) {
             const match = RegExp(options.serverRoute + "(.*)$");
+            let fileLocation: string;
             const pathLocation = req.path.match(match);
-            const fileLocation = path.join(options.localPath, pathLocation[1]);
+
+            if (pathLocation !== null) {
+                fileLocation = path.join(options.localPath, pathLocation[1]);
+            } else {
+                next();
+                return;
+            }
 
             fs.access(fileLocation, fs.constants.R_OK, (err) => {
                 if (err) {
                     next();
                     return;
                 }
+                const filetype = mime.getType(fileLocation);
+                res.setHeader('Content-Type', filetype);
+                
                 const fileStream = fs.createReadStream(fileLocation);
                 const bodyPattern = /<\/\s*?body\s?.*>/gi;
 
