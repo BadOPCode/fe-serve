@@ -17,14 +17,15 @@ A swiss army knife utility to help fullstack developers do their jobs and share 
 ## Installation
 
 Fullstack Serve is designed to be used in parallel to NPM projects. If your project is not a Node JS project you can create
-a blank directory and follow the directions bellow and configure it to work with your project.  Scripts can be added to control NPM outside of the fullstack directory.
-Alternatively you can install it as a global and type `fullstack` anywhere there is a package.json. 
+a blank directory and follow the directions bellow and configure it to work with your project.
 
 To install use NPM and type...
 
 `npm i -D fullstack-serve`
 
-After installing as a dev dependency you than need to add some configuration to your package.json.
+Alternatively you can install it as a global `npm i -g fullstack-serve` and type `fullstack` in a directory where you configured a package.json to run.  This is not recommended. It's better to have the version locked as a dev dependency in the project.
+
+After installing, you than need to add some configuration to your package.json.  
 In the scripts section you can add...
 
     scripts:{
@@ -32,6 +33,7 @@ In the scripts section you can add...
         ...
 
 To run you just need to run `npm run serve`
+You can than make shell scripts that call this npm command and simplify it even more for your developers.
 
 
 ## Configuration
@@ -60,7 +62,7 @@ All Fullstack Serve options are stored within the "fullstack-serve" object.
                 "protocol": "https",
                 "hostname": "myapi.awesome.com",
                 "path": "/userinfo/v2/",
-                "port": 80
+                "port": 443
             }
         }
     }

@@ -1,6 +1,6 @@
 {
     "name": "fullstack-serve",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A swiss army knife utility to help fullstack developers do their jobs and share uniformed environments with other developers.",
     "main": "index.js",
     "repository": {
