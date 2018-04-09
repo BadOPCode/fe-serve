@@ -9,9 +9,6 @@ export class Home extends React.Component<IHomeProps, IHomeState> {
     render() {
         return ( 
             <div>
-                <div className={"title"}>
-                    Fullstack Serve <img src={ "/Swiss_Army_Knife.svg" } />
-                </div>
                 <div>
                     <div className={"sub-title"}>Cool Features</div>
                     <ul>

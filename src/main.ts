@@ -34,6 +34,5 @@ process.on('SIGINT', (signal) => {
     process.exit(1);
 });
 process.on('uncaughtException', (err) => {
-    cout(`Uncaught exception occurred: ${err}`);
-    bootstrap();
+    cout(`Uncaught exception occurred: ${err}`).error();
 })

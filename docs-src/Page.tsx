@@ -36,7 +36,11 @@ export class Page extends React.Component<IPageProps, IPageState> {
         return (
             <div>
                 <AppBar
-                    title={"Fullstack Serve"}
+                    title={
+                        <div className={ "banner-title" }>
+                            Fullstack Serve <img src={ "Swiss_Army_Knife.svg" } />
+                        </div>                            
+                    }
                     onLeftIconButtonClick={ this.handleClickBurger }
                     zDepth={ 99 }
                 />
@@ -48,12 +52,12 @@ export class Page extends React.Component<IPageProps, IPageState> {
                 >
                     <List>
                         <Subheader>Topics</Subheader>
-                        <Link to="/index.html/home">
+                        <Link to="Home">
                             <ListItem>
                                 Home
                             </ListItem>
                         </Link>
-                        <Link to="/index.html/about">
+                        <Link to="About">
                             <ListItem>
                                 About
                             </ListItem>
@@ -93,8 +97,8 @@ export class Page extends React.Component<IPageProps, IPageState> {
                 </Drawer>
                 <div>
                     <Switch>
-                        <Route path="/index.html/Home" component={ Home } />
-                        <Route path="/index.html/about" component={ About } />
+                        <Route path="Home" component={ Home } />
+                        <Route path="About" component={ About } />
                         <Route component={ Home } />
                     </Switch>
                 </div>

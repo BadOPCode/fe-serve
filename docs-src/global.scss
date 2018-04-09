@@ -1,8 +1,6 @@
 H1,
 .title {
     font-size: 10ex;
-    height: 100px;
-    text-align: center;
     margin-bottom: 15px;
 }
 
@@ -10,4 +8,13 @@ H2,
 .sub-title {
     font-size: 6ex;
     margin-bottom: 15px;
+}
+
+.banner-title {
+    text-align: center;
+    font-size: 3ex;
+    IMG {
+        height: 1.5em;
+        vertical-align: middle;
+    }
 }

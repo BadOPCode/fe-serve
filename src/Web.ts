@@ -98,7 +98,7 @@ export class WebServer {
             });
         }
 
-        this.setPort(this.pvtConfig.listenPort);
+        this.setPort(this.pvtConfig.listenPort || 8000);
     }
 
     /**

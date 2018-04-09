@@ -16,51 +16,95 @@ export interface IPluginOptions {
 }
 
 export default function Static(options: IPluginOptions) {
-    // console.log("Plugin loaded", options.webServer);
+    var pushState: boolean = false;
+    var pushFile: string;
+    var serverRoute: string = options.serverRoute;
+    var localPath: string = options.localPath;
+
+    // specified local path is a pushstate
+    if (options.localPath.match(/\.html?/)) {
+        pushState = true; 
+        pushFile = path.basename(options.localPath);
+        localPath = path.dirname(options.localPath);
+    }
+
+    // get the extra beyond the path
+    function getExtraRequest(request:string): string {
+        const match = RegExp(options.serverRoute + "(.*)$");
+        const pathMatches = request.match(match);
+        let retStr = "";
+        if (pathMatches) retStr = pathMatches[1];
+
+        return retStr;
+    }
+
+    function outputFile(fileLocation:string, req:any, res:any, next: ()=>void) {
+        const filetype = mime.getType(fileLocation);
+        res.setHeader('Content-Type', filetype);
+        
+        const fileStream = fs.createReadStream(fileLocation);
+        const bodyPattern = /<\/\s*body(\s.*)?>/gi;
+
+        fileStream.on("data", (chunk) => {
+            let strChunk = chunk.toString("utf8");
+            if (strChunk.match(bodyPattern)) {
+                strChunk = strChunk.replace(bodyPattern, options.injectedText + "$&");
+                res.write(strChunk);
+            } else {
+                res.write(chunk);
+            }
+        });
+
+        fileStream.on("end", () => {
+            res.end();
+            next();
+        });
+    }
 
     const pluginExpressStatic = (req: any, res: any, next: () => void) => {
-        if (!req.path) return;
-        if (!req.path.match(/\/$/)) {
-            const match = RegExp(options.serverRoute + "(.*)$");
-            let fileLocation: string;
-            const pathLocation = req.path.match(match);
+        const fixedRoute = options.serverRoute.replace('/','\/');
+        const srvPattern = RegExp(fixedRoute + ".*");
+        if (!req.path || !req.path.match(srvPattern)) {
+            next();
+            return;
+        }
 
-            if (pathLocation !== null) {
-                fileLocation = path.join(options.localPath, pathLocation[1]);
+        const dirPat = RegExp(fixedRoute + "\/?$");
+        if (!pushState && !!req.path.match(dirPat)) {
+            next();
+            return;
+        }
+
+        const extraReq = getExtraRequest(req.path);
+
+        let attemptFileLocation;
+        try {
+            attemptFileLocation = path.join(process.cwd(), localPath, extraReq);
+            fs.accessSync(attemptFileLocation, fs.constants.R_OK);
+            console.log('attemptFileLocation', attemptFileLocation);
+            if (fs.lstatSync(attemptFileLocation).isFile()) {
+                outputFile(attemptFileLocation, req, res, next);
+            } else {
+                if (pushState) {
+                    attemptFileLocation = path.join(process.cwd(), options.localPath);
+                    console.log('pushState attemptFileLocation', attemptFileLocation);
+                    outputFile(attemptFileLocation, req, res, next);
+                } else {
+                    next();
+                    return;
+                }
+            }
+        } catch(err) {
+            if (pushState) {
+                attemptFileLocation = path.join(process.cwd(), options.localPath);
+                console.log('pushState attemptFileLocation', attemptFileLocation);
+                outputFile(attemptFileLocation, req, res, next);
             } else {
                 next();
                 return;
             }
-
-            fs.access(fileLocation, fs.constants.R_OK, (err) => {
-                if (err) {
-                    next();
-                    return;
-                }
-                const filetype = mime.getType(fileLocation);
-                res.setHeader('Content-Type', filetype);
-                
-                const fileStream = fs.createReadStream(fileLocation);
-                const bodyPattern = /<\/\s*?body\s?.*>/gi;
-
-                fileStream.on("data", (chunk) => {
-                    let strChunk = chunk.toString("utf8");
-                    if (strChunk.match(bodyPattern)) {
-                        strChunk = strChunk.replace(bodyPattern, options.injectedText + "$&");
-                        res.write(strChunk);
-                    } else {
-                        res.write(chunk);
-                    }
-                });
-
-                fileStream.on("end", () => {
-                    res.end();
-                    next();
-                });
-            });
-        } else {
-            next();
         }
+
     };
 
     return pluginExpressStatic;
