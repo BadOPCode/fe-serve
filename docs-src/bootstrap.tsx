@@ -2,15 +2,15 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Page } from "./Page";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 
 const BootStrap = () => {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <MuiThemeProvider>
                 <Page />
             </MuiThemeProvider>
-        </BrowserRouter>    
+        </HashRouter>    
     )
 }
 

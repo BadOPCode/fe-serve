@@ -1,4 +1,5 @@
 import * as decision from "dt-decisions";
+import * as fs from "fs";
 import * as watch from "glob-watcher";
 import * as shell from "shelljs";
 import * as cout from "cout";
@@ -11,26 +12,27 @@ export class WatchTask {
 
     public processCommand(cmd: string, path: string, stats: any) {
         let taskCmd: string = cmd;
+        const pathStat: any = ( stats ? stats : fs.lstatSync(path) )
 
         let fileType: string;
-        if (stats.isBlockDevice()) { fileType = "block"; }
-        if (stats.isCharacterDevice()) { fileType = "char"; }
-        if (stats.isDirectory()) { fileType = "dir"; }
-        if (stats.isFIFO()) { fileType = "fifo"; }
-        if (stats.isFile()) { fileType = "file"; }
-        if (stats.isSocket()) { fileType = "socket"; }
-        if (stats.isSymbolicLink()) { fileType = "link"; }
+        if (pathStat.isBlockDevice()) { fileType = "block"; }
+        if (pathStat.isCharacterDevice()) { fileType = "char"; }
+        if (pathStat.isDirectory()) { fileType = "dir"; }
+        if (pathStat.isFIFO()) { fileType = "fifo"; }
+        if (pathStat.isFile()) { fileType = "file"; }
+        if (pathStat.isSocket()) { fileType = "socket"; }
+        if (pathStat.isSymbolicLink()) { fileType = "link"; }
 
         taskCmd = taskCmd.replace(/{file}/g, path)
             .replace(/{type}/g, fileType)
-            .replace(/{mode}/g, "" + stats.mode)
-            .replace(/{size}/g, "" + stats.size)
-            .replace(/{atime}/g, "" + stats.atimeMs)
-            .replace(/{mtime}/g, "" + stats.mtimeMs)
-            .replace(/{ctime}/g, "" + stats.ctimeMs)
-            .replace(/{btime}/g, "" + stats.birthtimeMs);
+            .replace(/{mode}/g, "" + pathStat.mode)
+            .replace(/{size}/g, "" + pathStat.size)
+            .replace(/{atime}/g, "" + pathStat.atimeMs)
+            .replace(/{mtime}/g, "" + pathStat.mtimeMs)
+            .replace(/{ctime}/g, "" + pathStat.ctimeMs)
+            .replace(/{btime}/g, "" + pathStat.birthtimeMs);
 
-        cout(`Task triggered running: ${cmd}`).warn();
+        cout(`Task triggered running: ${cmd}`).verbose();
         shell.exec(taskCmd);
     }
 
@@ -41,7 +43,7 @@ export class WatchTask {
         if (!!this.pvtConfig.watchTasks) {
             this.pvtConfig.watchTasks.forEach((task) => {
                 const newWatch = watch(task.masks);
-                cout(`Watching path ${task.masks}`).warn();
+                cout(`Watching path ${task.masks}`).verbose();
 
                 if (task.tasks.any) {
                     newWatch.on("add", (path: string, stat: any) =>

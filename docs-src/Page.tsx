@@ -5,6 +5,8 @@ import { Route, Link, Switch } from "react-router-dom";
 import "./global.scss";
 import { Home } from "./Home";
 import { About } from "./About";
+import { Install } from "./Install";
+import { WhatsNext } from "./WhatsNext";
 
 interface IPageProps {}
 interface IPageState {
@@ -52,12 +54,12 @@ export class Page extends React.Component<IPageProps, IPageState> {
                 >
                     <List>
                         <Subheader>Topics</Subheader>
-                        <Link to="Home">
+                        <Link to="/Home">
                             <ListItem>
                                 Home
                             </ListItem>
                         </Link>
-                        <Link to="About">
+                        <Link to="/About">
                             <ListItem>
                                 About
                             </ListItem>
@@ -65,9 +67,11 @@ export class Page extends React.Component<IPageProps, IPageState> {
                         <ListItem
                             initiallyOpen={true}
                             nestedItems={[
-                                <ListItem>
-                                    Installing Fullstack
-                                </ListItem>,
+                                <Link to="/Install">
+                                    <ListItem>
+                                        Installing Fullstack
+                                    </ListItem>
+                                </Link>,
                                 <ListItem
                                     initiallyOpen={true}
                                     nestedItems={[
@@ -90,15 +94,19 @@ export class Page extends React.Component<IPageProps, IPageState> {
                             ]}>
                             Docs
                         </ListItem>
-                        <ListItem>
-                            What's Next
-                        </ListItem>
+                        <Link to="/WhatsNext">
+                            <ListItem>
+                                What's Next
+                            </ListItem>
+                        </Link>
                     </List>
                 </Drawer>
-                <div>
+                <div className={ "content" }>
                     <Switch>
-                        <Route path="Home" component={ Home } />
-                        <Route path="About" component={ About } />
+                        <Route path="/Home" component={ Home } />
+                        <Route path="/About" component={ About } />
+                        <Route path="/Install" component={ Install } />
+                        <Route path="/WhatsNext" component={ WhatsNext } />
                         <Route component={ Home } />
                     </Switch>
                 </div>
