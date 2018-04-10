@@ -12,7 +12,8 @@
         ]
     },
     "include": [
-        "docs-src/**/*"
+        "docs-src/**/*",
+        "src/types/**/*"
     ],
     "exclude": []
 }

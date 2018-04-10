@@ -1,12 +1,14 @@
 import * as React from "react";
 import { AppBar, Drawer, List, ListItem, Subheader } from "material-ui";
 import { Route, Link, Switch } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 
 import "./global.scss";
 import { Home } from "./Home";
 import { About } from "./About";
 import { Install } from "./Install";
 import { WhatsNext } from "./WhatsNext";
+import { Config } from "./Config";
 
 interface IPageProps {}
 interface IPageState {
@@ -54,37 +56,39 @@ export class Page extends React.Component<IPageProps, IPageState> {
                 >
                     <List>
                         <Subheader>Topics</Subheader>
-                        <Link to="/Home">
-                            <ListItem>
-                                Home
-                            </ListItem>
-                        </Link>
-                        <Link to="/About">
-                            <ListItem>
-                                About
-                            </ListItem>
-                        </Link>
+                        <ListItem
+                            containerElement={<Link to="/Home"/>}>
+                            Home
+                        </ListItem>
+                        <ListItem
+                            containerElement={<Link to="/About"/>}>
+                            About
+                        </ListItem>
                         <ListItem
                             initiallyOpen={true}
                             nestedItems={[
-                                <Link to="/Install">
-                                    <ListItem>
-                                        Installing Fullstack
-                                    </ListItem>
-                                </Link>,
                                 <ListItem
+                                    containerElement={<Link to="/Install"/>}>
+                                    Installing Fullstack
+                                </ListItem>,
+                                <ListItem
+                                    containerElement={<Link to="/Config"/>}
                                     initiallyOpen={true}
                                     nestedItems={[
-                                        <ListItem>
+                                        <ListItem
+                                            containerElement={<HashLink to="#Mock" />}>
                                             Mock Path Maps
                                         </ListItem>,
-                                        <ListItem>
+                                        <ListItem
+                                        containerElement={<HashLink to="#Proxy" />}>
                                             Proxy Path Maps
                                         </ListItem>,
-                                        <ListItem>
+                                        <ListItem
+                                            containerElement={<HashLink to="#Static" />}>
                                             Static Path Maps
                                         </ListItem>,
-                                        <ListItem>
+                                        <ListItem
+                                            containerElement={<HashLink to="#Watch" />}>
                                             Watch Tasks
                                         </ListItem>
                                     ]}
@@ -94,11 +98,10 @@ export class Page extends React.Component<IPageProps, IPageState> {
                             ]}>
                             Docs
                         </ListItem>
-                        <Link to="/WhatsNext">
-                            <ListItem>
-                                What's Next
-                            </ListItem>
-                        </Link>
+                        <ListItem
+                            containerElement={<Link to="/Install"/>}>
+                            What's Next
+                        </ListItem>
                     </List>
                 </Drawer>
                 <div className={ "content" }>
@@ -106,6 +109,7 @@ export class Page extends React.Component<IPageProps, IPageState> {
                         <Route path="/Home" component={ Home } />
                         <Route path="/About" component={ About } />
                         <Route path="/Install" component={ Install } />
+                        <Route path="/Config" component={ Config } />
                         <Route path="/WhatsNext" component={ WhatsNext } />
                         <Route component={ Home } />
                     </Switch>
