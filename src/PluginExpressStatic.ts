@@ -81,13 +81,11 @@ export default function Static(options: IPluginOptions) {
         try {
             attemptFileLocation = path.join(process.cwd(), localPath, extraReq);
             fs.accessSync(attemptFileLocation, fs.constants.R_OK);
-            console.log('attemptFileLocation', attemptFileLocation);
             if (fs.lstatSync(attemptFileLocation).isFile()) {
                 outputFile(attemptFileLocation, req, res, next);
             } else {
                 if (pushState) {
                     attemptFileLocation = path.join(process.cwd(), options.localPath);
-                    console.log('pushState attemptFileLocation', attemptFileLocation);
                     outputFile(attemptFileLocation, req, res, next);
                 } else {
                     next();
@@ -97,7 +95,6 @@ export default function Static(options: IPluginOptions) {
         } catch(err) {
             if (pushState) {
                 attemptFileLocation = path.join(process.cwd(), options.localPath);
-                console.log('pushState attemptFileLocation', attemptFileLocation);
                 outputFile(attemptFileLocation, req, res, next);
             } else {
                 next();

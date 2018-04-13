@@ -17,13 +17,13 @@ export class ConfigTestFixture {
         Expect(ConfigSpec.Config).toBeDefined();
     }
 
-    @Test("addListener should push to the stack")
-    public testAddListener() {
-        this.config.addListener((configData) => {
-            Expect(configData.listenPort).toBe(9000);
-        });
-        this.config.readPackage();
-    }
+    // @Test("addListener should push to the stack")
+    // public testAddListener() {
+    //     this.config.addListener((configData) => {
+    //         Expect(configData.listenPort).toBe(9000);
+    //     });
+    //     this.config.readPackage();
+    // }
 
     @Test("readPackage should generate a config object")
     public testReadPackage() {

@@ -53,15 +53,7 @@ export class WebServer {
         this.io.on('connect', (socket: any) => {
             this.queue.push(socket);
 
-            // console.log('Connected client on port');
-            // socket.on('message', (m: Message) => {
-            //     console.log('[server](message): %s', JSON.stringify(m));
-            //     this.io.emit('message', m);
-            // }); 
-            socket.emit('events', { hello: 'world' });
-
             socket.on('disconnect', () => {
-                // console.log('Client disconnected');
             });
         });
     }

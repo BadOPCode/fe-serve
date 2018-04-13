@@ -57,15 +57,15 @@ export class Config implements IConfigData {
     public pathMaps: { [path: string]: IMapData};
     public watchTasks: ITask[];
     private currentWatchedConfig: string;
-    private listeners: Array<(config: IConfigData) => void> = [];
+    private listeners: Array<(eventType: string) => void> = [];
 
-    public addListener(newListener: (config: IConfigData) => void) {
+    public addListener(newListener: (eventType: string) => void) {
         this.listeners.push(newListener);
     }
 
-    public notifyListeners() {
+    public notifyListeners(eventType:string) {
         this.listeners.forEach((listener) => {
-            listener(this);
+            listener(eventType);
         });
     }
 
@@ -95,14 +95,13 @@ export class Config implements IConfigData {
             this.listenPort = packageInfo["fullstack-serve"].listenPort || 3000;
             this.pathMaps = packageInfo["fullstack-serve"].pathMaps || {};
             this.watchTasks = packageInfo["fullstack-serve"].watchTasks || [];
-            this.notifyListeners();
+            this.notifyListeners("loaded");
 
             if (this.currentWatchedConfig !== packagePath) {
                 this.currentWatchedConfig = packagePath;
-                // fs.unwatchFile(this.currentWatchedConfig);
+
                 fs.watchFile(packagePath, (curr, prev) => {
-                    // this.readPackage(specifiedPath);
-                    process.exit(42);
+                    this.notifyListeners("reload");
                 });
             }
         });
