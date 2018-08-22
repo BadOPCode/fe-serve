@@ -8,10 +8,10 @@
             "dom"
         ],
         "target": "es5",
-        "module": "umd"
+        "module": "umd",
+        "jsx": "react"
     },
     "include": [
         "src/**/*.ts"
     ],
-    "exclude": []
 }

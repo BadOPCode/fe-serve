@@ -1,8 +1,7 @@
+import * as cout from "cout";
 import { Config, IConfigData } from "./Config";
 import { WatchTask } from "./WatchTasks";
 import { WebServer } from "./Web";
-import * as cout from "cout";
-
 
 const bootstrap = () => {
     const config = new Config();
@@ -10,7 +9,7 @@ const bootstrap = () => {
     config.readPackage();
 
     const web  = new WebServer();
-    const watch = new WatchTask();
+    const watch = new WatchTask(web);
 
     config.addListener((eventType: string) => {
         if (eventType === "loaded") {
@@ -19,17 +18,17 @@ const bootstrap = () => {
         }
         if (eventType === "reload") {
             web.writeToQueue("browser command", "reload");
-            process.exit(42)    
+            process.exit(42);
         }
     });
 
-    process.on('uncaughtException', (err) => {
+    process.on("uncaughtException", (err) => {
         cout(`Uncaught exception occurred: ${err}`).error();
         web.writeToQueue("events", err);
-    })    
-}
+    });
+};
 
-process.on('SIGINT', (signal) => {
+process.on("SIGINT", (signal) => {
     cout(`closing server...`).error;
     process.exit(1);
 });

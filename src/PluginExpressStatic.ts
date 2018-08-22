@@ -4,10 +4,10 @@
  * Based off of express-dev-reload by Moritz(mo22)
  */
 // import * as expressModifyResponse from "express-modify-response";
-import * as fs from "fs";
-import * as path from "path";
-import * as mime from "mime";
 import * as cout from "cout";
+import * as fs from "fs";
+import * as mime from "mime";
+import * as path from "path";
 
 export interface IPluginOptions {
     localPath: string;
@@ -16,32 +16,32 @@ export interface IPluginOptions {
 }
 
 export default function Static(options: IPluginOptions) {
-    var pushState: boolean = false;
-    var pushFile: string;
-    var serverRoute: string = options.serverRoute;
-    var localPath: string = options.localPath;
+    let pushState: boolean = false;
+    let pushFile: string;
+    const serverRoute: string = options.serverRoute;
+    let localPath: string = options.localPath;
 
     // specified local path is a pushstate
     if (options.localPath.match(/\.html?/)) {
-        pushState = true; 
+        pushState = true;
         pushFile = path.basename(options.localPath);
         localPath = path.dirname(options.localPath);
     }
 
     // get the extra beyond the path
-    function getExtraRequest(request:string): string {
+    function getExtraRequest(request: string): string {
         const match = RegExp(options.serverRoute + "(.*)$");
         const pathMatches = request.match(match);
         let retStr = "";
-        if (pathMatches) retStr = pathMatches[1];
+        if (pathMatches) { retStr = pathMatches[1]; }
 
         return retStr;
     }
 
-    function outputFile(fileLocation:string, req:any, res:any, next: ()=>void) {
+    function outputFile(fileLocation: string, req: any, res: any, next: () => void) {
         const filetype = mime.getType(fileLocation);
-        res.setHeader('Content-Type', filetype);
-        
+        res.setHeader("Content-Type", filetype);
+
         const fileStream = fs.createReadStream(fileLocation);
         const bodyPattern = /<\/\s*body(\s.*)?>/gi;
 
@@ -62,7 +62,7 @@ export default function Static(options: IPluginOptions) {
     }
 
     const pluginExpressStatic = (req: any, res: any, next: () => void) => {
-        const fixedRoute = options.serverRoute.replace('/','\/');
+        const fixedRoute = options.serverRoute.replace("/", "\/");
         const srvPattern = RegExp(fixedRoute + ".*");
         if (!req.path || !req.path.match(srvPattern)) {
             next();
@@ -92,7 +92,7 @@ export default function Static(options: IPluginOptions) {
                     return;
                 }
             }
-        } catch(err) {
+        } catch (err) {
             if (pushState) {
                 attemptFileLocation = path.join(process.cwd(), options.localPath);
                 outputFile(attemptFileLocation, req, res, next);

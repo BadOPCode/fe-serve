@@ -8,24 +8,32 @@ import * as cout from "cout";
 import * as decision from "dt-decisions";
 import * as express from "express";
 import * as fs from "fs";
+import * as watch from "glob-watcher";
 import * as http from "http";
 import * as path from "path";
 import * as serveIndex from "serve-index";
 import * as SocketIO from "socket.io";
-import * as watch from "glob-watcher";
 
 // Internal Modules
 import { IConfigData, IMapData, Symbols } from "./Config";
 import { IMockEndpoint, MockEndpoint } from "./MockEndpoint";
 import { ProxyEndpoint } from "./ProxyEndpoint";
 
-import Static from "./PluginExpressStatic";
 import SendScript from "./PluginExpressSendScript";
+import Static from "./PluginExpressStatic";
 
 const SCRIPT_ROUTE = "/__fullstack.js";
 const SOCKETIO_ROUTE = "/socket.io/socket.io.js";
 const SOCKETIO_PATH = path.join(require.resolve("socket.io-client"), "..", "..", "dist", "socket.io.js");
-const SCRIPT_TAG = `<script src=\"${SOCKETIO_ROUTE}\"></script><script src=\"${SCRIPT_ROUTE}\"><\/script>`;
+const SCRIPT_TAG = `
+
+<!-- FULLSTACK SERVE CODE STARTS -->
+    <FullstackDashboard></FullstackDashboard>
+    <script src=\"${SOCKETIO_ROUTE}\"></script>
+    <script src=\"${SCRIPT_ROUTE}\"><\/script>
+<!-- FULSTACK SERVE CODE ENDS -->
+
+`;
 
 /**
  * WebServer: Main class for handling all the web functionality.
@@ -37,8 +45,8 @@ export class WebServer {
     public mockEp: MockEndpoint;
     public proxyEp: ProxyEndpoint;
     public queue: any[];
-    private pvtConfig: IConfigData;
     public isListening: boolean = false;
+    private pvtConfig: IConfigData;
 
     constructor() {
         this.app = express();
@@ -50,10 +58,10 @@ export class WebServer {
 
     public addWebSocket() {
         this.io = SocketIO(this.server);
-        this.io.on('connect', (socket: any) => {
+        this.io.on("connect", (socket: any) => {
             this.queue.push(socket);
 
-            socket.on('disconnect', () => {
+            socket.on("disconnect", () => {
             });
         });
     }
@@ -77,7 +85,7 @@ export class WebServer {
                 scriptPath: path.join(__dirname, "client", "FullstackClient.js"),
                 sharePath: SCRIPT_ROUTE,
             }));
-            
+
             const keys = Object.keys(this.pvtConfig.pathMaps);
             keys.map((key: string) => {
                 const pathMap: IMapData = this.pvtConfig.pathMaps[key];
@@ -113,9 +121,9 @@ export class WebServer {
         const pathStr = data.localPath + "/**/*";
         const pathWatch = watch([pathStr]);
 
-        pathWatch.on('add', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
-        pathWatch.on('change', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
-        pathWatch.on('unlink', (path: string, stat: any)=>{ this.writeToQueue("browser command", "reload") });
+        pathWatch.on("add", (path: string, stat: any) => { this.writeToQueue("browser command", "reload"); });
+        pathWatch.on("change", (path: string, stat: any) => { this.writeToQueue("browser command", "reload"); });
+        pathWatch.on("unlink", (path: string, stat: any) => { this.writeToQueue("browser command", "reload"); });
 
         this.app.use(data.sharePath, serveIndex(data.localPath));
     }

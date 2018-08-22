@@ -1,18 +1,30 @@
+import * as cout from "cout";
+import spawn = require("cross-spawn");
 import * as decision from "dt-decisions";
 import * as fs from "fs";
 import * as watch from "glob-watcher";
 import * as shell from "shelljs";
-import * as cout from "cout";
+import { v4 } from "uuid";
 
+import { RunSpout } from "run-spout";
 import { IConfigData } from "./Config";
+import { WebServer } from "./Web";
+
+const runner = new RunSpout();
+runner.run();
 
 export class WatchTask {
     public queue: any[];
+    public tasks: any = {};
     private pvtConfig: IConfigData;
+
+    constructor(public web: WebServer) {
+    }
 
     public processCommand(cmd: string, path: string, stats: any) {
         let taskCmd: string = cmd;
-        const pathStat: any = ( stats ? stats : fs.lstatSync(path) )
+        const id: string = v4();
+        const pathStat: any = ( stats ? stats : fs.lstatSync(path) );
 
         let fileType: string;
         if (pathStat.isBlockDevice()) { fileType = "block"; }
@@ -33,7 +45,53 @@ export class WatchTask {
             .replace(/{btime}/g, "" + pathStat.birthtimeMs);
 
         cout(`Task triggered running: ${cmd}`).verbose();
-        shell.exec(taskCmd);
+
+        const taskQueue = this.tasks;
+
+        runner.makeNewTask(taskCmd, 1000, () => {
+            const task = spawn(`${taskCmd}`);
+            cout(`Executing "${taskCmd}"`).verbose();
+
+            task.stdout.on("data", (data: any) => {
+                data.id = id;
+                data.task = taskCmd;
+                // console.log("data", data.toString());
+                this.web.io.emit(`console`, {
+                    type: "data",
+                    cmd: taskCmd,
+                    data: data.toString(),
+                    id,
+                    timeStamp: (new Date()).toISOString(),
+                });
+            });
+
+            task.stderr.on("data", (data: any) => {
+                data.id = id;
+                data.task = taskCmd;
+                cout("data", data.toString()).console.error();
+                this.web.io.emit(`console`, {
+                    type: "error",
+                    cmd: taskCmd,
+                    data: data.toString(),
+                    id,
+                    timeStamp: (new Date()).toISOString(),
+                });
+            });
+
+            task.on("close", (code: any) => {
+                this.web.io.emit(`console`, {
+                    type: "close",
+                    cmd: taskCmd,
+                    code,
+                    id,
+                    timeStamp: (new Date()).toISOString(),
+                });
+                delete this.tasks[id];
+                cout(`Completed running "${taskCmd}"`).verbose();
+            });
+
+            taskQueue[id] = task;
+        });
     }
 
     public processConfig(config: IConfigData) {

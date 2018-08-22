@@ -5,6 +5,7 @@
         "outDir": "lib/client",
         "target": "es5",
         "module": "commonjs",
+        "jsx": "react",
         "lib": [
             "dom",
             "es5"

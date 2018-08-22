@@ -19,6 +19,7 @@ rewiremock('glob-watcher')
         }
     });
 import * as WatchSpec from "./WatchTasks";
+import * as WebSpec from "./Web";
 
 @TestFixture("WatchTask Class")
 export class WatchTaskTestFixture {
@@ -26,8 +27,9 @@ export class WatchTaskTestFixture {
 
     @Setup
     public setupFixture() {
+        const web = new WebSpec.WebServer();
         // reinitialize web server every test because a couple of test we stub it
-        this.watch = new WatchSpec.WatchTask();
+        this.watch = new WatchSpec.WatchTask(web);
     }
 
     @Test("Check to see if the constructor is working.")

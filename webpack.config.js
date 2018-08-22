@@ -8,15 +8,21 @@ module.exports = {
         filename: 'FullstackClient.js'
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.css'],
     },
     module: {
         rules: [{
-            test: /\.ts$/,
-            loader: 'ts-loader',
-            options: {
-                configFile: "tsconfig.client.json"
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                options: {
+                    configFile: "tsconfig.client.json"
+                }
+            },
+            { loader: "style-loader" },
+            {
+                test: /\.css$/,
+                loader: 'css-loader',
             }
-        }]
-    }
+        ]
+    },
 }

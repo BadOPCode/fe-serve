@@ -2,5 +2,6 @@
     "tslint.autoFixOnSave": true,
     "eslint.enable": false,
     "javascript.implicitProjectConfig.experimentalDecorators": true,
-    "tslint.enable": true
+    "tslint.enable": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

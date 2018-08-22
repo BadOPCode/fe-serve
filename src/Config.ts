@@ -32,7 +32,7 @@ export interface IMapData {
     }
 }
 
-export interface ITask {
+export interface IPacketTask {
     masks: string[];
     tasks: {
         any?: string;
@@ -48,14 +48,14 @@ export interface IConfigData {
     pathMaps?: {
         [path: string]: IMapData;
     };
-    watchTasks?: ITask[];
+    watchTasks?: IPacketTask[];
 }
 
 export class Config implements IConfigData {
     public defaultApiAddress: string;
     public listenPort: number;
     public pathMaps: { [path: string]: IMapData};
-    public watchTasks: ITask[];
+    public watchTasks: IPacketTask[];
     private currentWatchedConfig: string;
     private listeners: Array<(eventType: string) => void> = [];
 

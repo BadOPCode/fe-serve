@@ -38,9 +38,11 @@ const mockGoodConfig: IConfigData = {
     },
 };
 
+
 @TestFixture("Web Class")
 export class WebTestFixture {
     public web: WebSpec.WebServer;
+    
     @SetupFixture
     public setupFixture() {
         // SpyOn(socketio, "Server").andReturn({
