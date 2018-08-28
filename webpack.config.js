@@ -1,7 +1,8 @@
 const path = require("path");
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
+    devtool: "inline-source-map",
     entry: './src/client/FullstackClient.ts',
     output: {
         path: path.join(__dirname, 'lib', 'client'),
@@ -15,13 +16,16 @@ module.exports = {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile: "tsconfig.client.json"
+                    configFile: "tsconfig.client.json",
                 }
             },
-            { loader: "style-loader" },
+            // { loader: "style-loader" },
             {
                 test: /\.css$/,
-                loader: 'css-loader',
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
             }
         ]
     },

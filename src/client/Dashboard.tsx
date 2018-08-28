@@ -1,6 +1,5 @@
 import { AppBar, Drawer, Tab, Tabs } from "@material-ui/core";
 import * as React from "react";
-import { Store, createStore } from "redux";
 
 import { dashboardToggle, tabSelected } from "./Actions";
 import { ITask, ITaskStore } from "./Tasks";

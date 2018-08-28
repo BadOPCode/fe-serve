@@ -51,5 +51,10 @@ export class TaskProcessor {
         console.log("pkt:", pkt);
         
         store.dispatch(updateTask(incomingTask));
+
+        const evt = new CustomEvent(`console:${pkt.id}`, {
+            detail: pkt
+        });
+        window.dispatchEvent(evt);
     }
 }

@@ -4,6 +4,7 @@ import * as decision from "dt-decisions";
 import * as fs from "fs";
 import * as watch from "glob-watcher";
 import * as shell from "shelljs";
+import { StringDecoder } from "string_decoder";
 import { v4 } from "uuid";
 
 import { RunSpout } from "run-spout";
@@ -50,29 +51,35 @@ export class WatchTask {
 
         runner.makeNewTask(taskCmd, 1000, () => {
             const task = spawn(`${taskCmd}`);
+            const decoder = new StringDecoder("utf8");
+
             cout(`Executing "${taskCmd}"`).verbose();
 
             task.stdout.on("data", (data: any) => {
-                data.id = id;
-                data.task = taskCmd;
+                const strData = decoder.write(data);
+                const numLines = strData.split("\n").length;
+
                 // console.log("data", data.toString());
                 this.web.io.emit(`console`, {
                     type: "data",
                     cmd: taskCmd,
-                    data: data.toString(),
+                    data: strData,
+                    lines: numLines,
                     id,
                     timeStamp: (new Date()).toISOString(),
                 });
             });
 
             task.stderr.on("data", (data: any) => {
-                data.id = id;
-                data.task = taskCmd;
+                const strData = decoder.write(data);
+                const numLines = strData.split("\n").length;
+
                 cout("data", data.toString()).console.error();
                 this.web.io.emit(`console`, {
                     type: "error",
                     cmd: taskCmd,
-                    data: data.toString(),
+                    data: strData,
+                    lines: numLines,
                     id,
                     timeStamp: (new Date()).toISOString(),
                 });

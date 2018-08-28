@@ -12,7 +12,8 @@
         "types": [
             "Node",
             "express"
-        ]
+        ],
+        "jsx": "react"
     },
     "include": [
         "src/**/*"

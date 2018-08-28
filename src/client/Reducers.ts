@@ -1,14 +1,14 @@
+import { Action, handleActions, ReducerMap, ReducerMapMeta, ReducerMapValue } from "redux-actions";
 import { TAB_SELECTED, TOGGLE_DASHBOARD, UPDATE_TASK } from "./Actions";
 import INITIAL_STATE from "./InitialState";
-import { ITaskStore, ITask, ITaskStatus } from "./Tasks";
-import { Action, handleActions, ReducerMap, ReducerMapValue, ReducerMapMeta } from "redux-actions";
+import { ITask, ITaskStatus, ITaskStore } from "./Tasks";
 
-const reducerMap:ReducerMapMeta<ITaskStore, any, {}> = {
+const reducerMap: ReducerMapMeta<ITaskStore, any, {}> = {
     [TAB_SELECTED]: (state: ITaskStore, action: Action<number>): ITaskStore => {
-        state.tabSelected = <number>action.payload;
+        state.tabSelected = action.payload as number;
         return state;
     },
-    
+
     [TOGGLE_DASHBOARD]: (state: ITaskStore): ITaskStore => {
         state.dashboardOpen = !state.dashboardOpen;
 
