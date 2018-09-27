@@ -8,15 +8,16 @@
         "url": "https://github.com/BadOPCode/fullstack-serve.git"
     },
     "scripts": {
-        "build-dev": "ts-node ./bin/build-dev",
-        "deploy": "ts-node ./bin/deploy",
-        "build-server": "ts-node ./bin/build-server",
+        "build-admin": "ts-node ./bin/build-admin",
         "build-client": "ts-node ./bin/build-client",
-        "build-tests": "ts-node ./bin/build-tests",
+        "build-dev": "ts-node ./bin/build-dev",
         "build-docs": "ts-node ./bin/build-docs",
-        "clean": "ts-node ./bin/clean",
-        "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js",
-        "flush": "rm -rf node_modules; rm package-lock.json"
+        "build-server": "ts-node ./bin/build-server",
+        "build-tests": "ts-node ./bin/build-tests",
+        "clean": "ts-node ./bin/clean-all",
+        "deploy": "ts-node ./bin/deploy",
+        "flush": "ts-node ./bin/clean-flush",
+        "test": "tsc -p tsconfig.test.json && nyc alsatian tests/**/*.spec.js"
     },
     "keywords": [],
     "author": "Shawn Rapp",
@@ -30,55 +31,55 @@
         "express": "^4.16.3",
         "glob-watcher": "^5.0.1",
         "mime": "^2.3.1",
-        "npm-check": "^5.8.0",
+        "npm-check": "^5.9.0",
         "react-router-dom": "^4.3.1",
         "serve-index": "^1.9.1",
         "shelljs": "^0.8.2",
         "socket.io": "^2.1.1"
     },
     "devDependencies": {
-        "@material-ui/core": "^1.5.1",
-        "@material-ui/icons": "^2.0.3",
+        "@material-ui/core": "^3.1.1",
+        "@material-ui/icons": "^3.0.1",
         "@types/classnames": "^2.2.6",
         "@types/cross-spawn": "^6.0.0",
         "@types/express": "^4.16.0",
         "@types/mime": "^2.0.0",
-        "@types/node": "^10.5.8",
-        "@types/react": "^16.4.9",
-        "@types/react-dom": "^16.0.7",
-        "@types/react-redux": "^6.0.6",
-        "@types/react-router-dom": "^4.3.0",
+        "@types/node": "^10.11.1",
+        "@types/react": "^16.4.14",
+        "@types/react-dom": "^16.0.8",
+        "@types/react-redux": "^6.0.9",
+        "@types/react-router-dom": "^4.3.1",
         "@types/redux-actions": "^2.3.0",
         "@types/serve-index": "^1.7.29",
         "@types/shelljs": "^0.8.0",
-        "@types/socket.io": "^1.4.36",
-        "@types/uuid": "^3.4.3",
+        "@types/socket.io": "^1.4.38",
+        "@types/uuid": "^3.4.4",
         "@types/webpack-env": "^1.13.6",
         "alsatian": "^2.3.0",
-        "awesome-typescript-loader": "^5.2.0",
+        "awesome-typescript-loader": "^5.2.1",
         "classnames": "^2.2.6",
         "cross-spawn": "^6.0.5",
         "css-loader": "^1.0.0",
-        "nyc": "^12.0.2",
-        "react": "^16.4.2",
-        "react-dom": "^16.4.2",
+        "nyc": "^13.0.1",
+        "react": "^16.5.2",
+        "react-dom": "^16.5.2",
         "react-router-hash-link": "^1.2.0",
         "redux": "^4.0.0",
         "redux-actions": "^2.6.1",
-        "rewiremock": "^3.7.7",
+        "rewiremock": "^3.7.8",
         "run-spout": "^2.0.4",
         "sass-loader": "^7.1.0",
         "socket.io-client": "^2.1.1",
-        "style-loader": "^0.22.1",
+        "style-loader": "^0.23.0",
         "tap-bark": "^1.0.0",
-        "ts-loader": "^4.5.0",
+        "ts-loader": "^5.2.1",
         "ts-node": "^7.0.1",
         "tslint": "^5.11.0",
-        "typescript": "^3.0.1",
+        "typescript": "^3.1.1",
         "uuid": "^3.3.2",
-        "webpack": "^4.17.1",
-        "webpack-cli": "^3.1.0",
-        "xterm": "^3.6.0"
+        "webpack": "^4.20.2",
+        "webpack-cli": "^3.1.1",
+        "xterm": "^3.7.0"
     },
     "nyc": {
         "exclude": [
@@ -126,7 +127,15 @@
             },
             {
                 "masks": [
-                    "docs-src/**/*"
+                    "src/admin/**/*.ts"
+                ],
+                "tasks": {
+                    "any": "npm run build-admin"
+                }
+            },
+            {
+                "masks": [
+                    "src/docs/**/*"
                 ],
                 "tasks": {
                     "any": "npm run build-docs"

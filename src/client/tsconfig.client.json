@@ -1,0 +1,21 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": true,
+        "outDir": "../../lib/client",
+        "target": "es5",
+        "module": "commonjs",
+        "jsx": "react",
+        "lib": [
+            "dom",
+            "es5"
+        ]
+    },
+    "include": [
+        "**/*.ts",
+        "../types/**/*.d.ts"
+    ],
+    "exclude": [
+        "**/*.spec.ts"
+    ]
+}

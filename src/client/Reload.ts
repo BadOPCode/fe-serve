@@ -1,6 +1,4 @@
 import * as decision from "dt-decisions";
-import { store, taskMgr } from "./Shared";
-import { ITask } from "./Tasks";
 
 export function run(socket: any) {
     socket.on("events", (data: string) => {
@@ -13,5 +11,4 @@ export function run(socket: any) {
         })(data);
     });
 
-    socket.on("console", taskMgr.process);
 }

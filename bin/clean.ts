@@ -2,15 +2,16 @@
 import * as shell from "shelljs";
 
 export function CleanCoverage() {
-    shell.rm('-r', "coverage");
+    shell.rm("-r", "coverage");
 }
 
 export function CleanLib() {
-    shell.rm('-r', "lib");
+    console.log("TEST");
+    shell.rm("-r", "lib");
 }
 
 export function CleanTests() {
-    shell.rm('-r', "tests");    
+    shell.rm("-r", "tests");
 }
 
 export function Clean() {
@@ -19,4 +20,8 @@ export function Clean() {
     CleanTests();
 }
 
-// Clean();
+export function Flush() {
+    Clean();
+    shell.rm("-r", "node_modules");
+    shell.rm("package-lock.json");
+}
